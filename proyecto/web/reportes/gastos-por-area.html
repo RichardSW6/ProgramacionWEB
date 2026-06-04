@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Reporte Gastos por Área</title>
+    <meta name="description" content="Reporte de gastos agrupados por área empresarial">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+    <style>
+        .chart-wrapper {
+            position: relative;
+            height: 320px;
+        }
+        .total-row {
+            background: rgba(59,130,246,0.08) !important;
+            border-top: 2px solid var(--accent) !important;
+            font-weight: 700;
+        }
+        .total-row td { color: var(--text-primary) !important; }
+        .total-row td:first-child { color: var(--accent) !important; }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div><div class="brand-name">GastosEmp</div><div class="brand-sub">Sistema de Gastos</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item"><a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#sg" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sg">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="../gastos/nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#sa" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sa">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../admin/usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="../admin/areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="../admin/proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="../admin/presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="../admin/bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#sr" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="sr">
+                    <div class="nav-submenu">
+                        <a class="nav-link active" href="gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Reporte — Gastos por Área</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Reportes</li>
+                        <li class="breadcrumb-item active">Gastos por Área</li>
+                    </ol>
+                </nav>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <form id="filter-form">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-2">
+                            <label class="form-label">Fecha desde <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control form-control-sm" id="f-fecha-desde" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Fecha hasta <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control form-control-sm" id="f-fecha-hasta" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Área (opcional)</label>
+                            <select class="form-select form-select-sm" id="f-area">
+                                <option value="">Todas las áreas</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm flex-grow-1" id="btn-generar">
+                                <i class="bi bi-bar-chart"></i> Generar Reporte
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm" id="btn-exportar" disabled>
+                                <i class="bi bi-download"></i> CSV
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results section (hidden until generated) -->
+            <div id="results-section" style="display:none;">
+                <!-- Chart -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-bar-chart-fill me-2 text-accent"></i>Total por Área</h5>
+                        <span class="text-muted-custom small" id="periodo-label"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <canvas id="chart-area"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table mb-0" id="reporte-table">
+                            <thead>
+                                <tr>
+                                    <th>Área</th>
+                                    <th>Período</th>
+                                    <th>Cantidad de Gastos</th>
+                                    <th>Subtotal</th>
+                                    <th>IVA</th>
+                                    <th>Total MXN</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reporte-tbody"></tbody>
+                            <tfoot id="reporte-tfoot"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty/initial state -->
+            <div id="initial-state" class="card">
+                <div class="card-body">
+                    <div class="empty-state py-5">
+                        <div class="empty-icon"><i class="bi bi-bar-chart-line"></i></div>
+                        <h5>Genera tu reporte</h5>
+                        <p>Selecciona el período y haz clic en "Generar Reporte" para visualizar los datos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+let chartInstance = null;
+
+// Palette for chart bars
+const CHART_COLORS = [
+    'rgba(59,130,246,0.8)',
+    'rgba(16,185,129,0.8)',
+    'rgba(245,158,11,0.8)',
+    'rgba(239,68,68,0.8)',
+    'rgba(99,102,241,0.8)',
+    'rgba(6,182,212,0.8)',
+    'rgba(236,72,153,0.8)',
+    'rgba(168,85,247,0.8)',
+];
+
+$(function () {
+    Auth.check();
+    Auth.requireRole([1, 4]);
+    Auth.loadUserUI();
+
+    // Set default date range: first day of current month to today
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    $('#f-fecha-desde').val(firstDay.toISOString().split('T')[0]);
+    $('#f-fecha-hasta').val(now.toISOString().split('T')[0]);
+
+    loadAreas();
+
+    $('#filter-form').on('submit', function (e) {
+        e.preventDefault();
+        generarReporte();
+    });
+
+    $('#btn-exportar').on('click', exportarCSV);
+});
+
+function loadAreas() {
+    API.get('/admin/areas').then(function (res) {
+        const areas = res.data || res.areas || [];
+        areas.forEach(function (a) {
+            $('#f-area').append(`<option value="${a.id}">${a.nombre}</option>`);
+        });
+    }).catch(function () {});
+}
+
+function buildParams(extra) {
+    const p = {
+        fecha_desde: $('#f-fecha-desde').val(),
+        fecha_hasta: $('#f-fecha-hasta').val(),
+    };
+    const area = $('#f-area').val();
+    if (area) p.area_id = area;
+    if (extra) Object.assign(p, extra);
+    return '?' + $.param(p);
+}
+
+function generarReporte() {
+    const desde = $('#f-fecha-desde').val();
+    const hasta = $('#f-fecha-hasta').val();
+    if (!desde || !hasta) { Utils.showError('Selecciona el período completo.'); return; }
+    if (desde > hasta) { Utils.showError('La fecha desde no puede ser mayor a la fecha hasta.'); return; }
+
+    Utils.setLoading('#btn-generar', true, 'Generando...');
+    $('#results-section').hide();
+    $('#initial-state').hide();
+
+    API.get('/reportes/gastos-por-area' + buildParams())
+        .then(function (res) {
+            const data = res.data || res.reporte || [];
+            $('#periodo-label').text(`${Utils.formatDate(desde)} — ${Utils.formatDate(hasta)}`);
+            renderReporte(data);
+            renderChart(data);
+            $('#results-section').show();
+            $('#btn-exportar').prop('disabled', false);
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al generar reporte');
+            $('#initial-state').show();
+        })
+        .finally(function () {
+            Utils.setLoading('#btn-generar', false);
+        });
+}
+
+function renderReporte(data) {
+    const $tbody = $('#reporte-tbody');
+    const $tfoot = $('#reporte-tfoot');
+
+    if (!data || data.length === 0) {
+        $tbody.html('<tr><td colspan="6"><div class="empty-state py-4"><div class="empty-icon"><i class="bi bi-inbox"></i></div><p>No hay datos para el período seleccionado</p></div></td></tr>');
+        $tfoot.html('');
+        return;
+    }
+
+    let html = '';
+    let totalCant = 0, totalSub = 0, totalIva = 0, totalTot = 0;
+
+    data.forEach(function (row) {
+        const cant = row.cantidad_gastos || row.cantidad || 0;
+        const sub = parseFloat(row.subtotal || 0);
+        const iva = parseFloat(row.iva || 0);
+        const tot = parseFloat(row.total || 0);
+        totalCant += cant;
+        totalSub += sub;
+        totalIva += iva;
+        totalTot += tot;
+
+        const periodo = row.periodo || (row.anio && row.mes ? `${row.anio}/${String(row.mes).padStart(2,'0')}` : '—');
+
+        html += `<tr>
+            <td style="color:var(--text-primary);font-weight:600;">${row.area_nombre || row.area || '—'}</td>
+            <td>${periodo}</td>
+            <td><span class="badge" style="background:var(--accent-light);color:var(--accent);">${cant}</span></td>
+            <td>${Utils.formatMoney(sub)}</td>
+            <td>${Utils.formatMoney(iva)}</td>
+            <td style="color:var(--accent);font-weight:700;">${Utils.formatMoney(tot)}</td>
+        </tr>`;
+    });
+    $tbody.html(html);
+
+    // Totals row in tfoot
+    $tfoot.html(`<tr class="total-row">
+        <td>TOTALES</td>
+        <td>—</td>
+        <td>${totalCant}</td>
+        <td>${Utils.formatMoney(totalSub)}</td>
+        <td>${Utils.formatMoney(totalIva)}</td>
+        <td>${Utils.formatMoney(totalTot)}</td>
+    </tr>`);
+}
+
+function renderChart(data) {
+    if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+    }
+    if (!data || data.length === 0) return;
+
+    const labels = data.map(function (r) { return r.area_nombre || r.area || '—'; });
+    const values = data.map(function (r) { return parseFloat(r.total || 0); });
+    const colors = labels.map(function (_, i) { return CHART_COLORS[i % CHART_COLORS.length]; });
+
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    const ctx = document.getElementById('chart-area').getContext('2d');
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total MXN',
+                data: values,
+                backgroundColor: colors,
+                borderColor: colors.map(c => c.replace('0.8', '1')),
+                borderWidth: 1,
+                borderRadius: 6,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    titleColor: '#f1f5f9',
+                    bodyColor: '#94a3b8',
+                    callbacks: {
+                        label: function (ctx) {
+                            return ' ' + Utils.formatMoney(ctx.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(51,65,85,0.4)' },
+                    ticks: { color: '#94a3b8' }
+                },
+                y: {
+                    grid: { color: 'rgba(51,65,85,0.4)' },
+                    ticks: {
+                        color: '#94a3b8',
+                        callback: function (val) {
+                            if (val >= 1000000) return '$' + (val/1000000).toFixed(1) + 'M';
+                            if (val >= 1000) return '$' + (val/1000).toFixed(0) + 'K';
+                            return '$' + val;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function exportarCSV() {
+    const desde = $('#f-fecha-desde').val();
+    const hasta = $('#f-fecha-hasta').val();
+    const area = $('#f-area').val();
+    const params = { fecha_desde: desde, fecha_hasta: hasta, formato: 'csv' };
+    if (area) params.area_id = area;
+    window.location.href = API.BASE + '/reportes/gastos-por-area?' + $.param(params);
+}
+</script>
+</body>
+</html>

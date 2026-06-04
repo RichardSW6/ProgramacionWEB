@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Bitácora de Auditoría</title>
+    <meta name="description" content="Registro de auditoría y trazabilidad del sistema">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div><div class="brand-name">GastosEmp</div><div class="brand-sub">Sistema de Gastos</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item"><a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#sg" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sg">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="../gastos/nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#sa" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="sa">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link active" href="bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#sr" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sr">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Bitácora de Auditoría</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item active">Bitácora</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <span class="badge" style="background:rgba(16,185,129,0.15);color:var(--success);border:1px solid rgba(16,185,129,0.3);padding:6px 12px;border-radius:8px;">
+                    <i class="bi bi-shield-check me-1"></i> Solo lectura
+                </span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Usuario</label>
+                        <select class="form-select form-select-sm" id="f-usuario">
+                            <option value="">Todos los usuarios</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Entidad</label>
+                        <input type="text" class="form-control form-control-sm" id="f-entidad"
+                               placeholder="Ej: gastos, usuarios...">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Fecha desde</label>
+                        <input type="date" class="form-control form-control-sm" id="f-fecha-desde">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Fecha hasta</label>
+                        <input type="date" class="form-control form-control-sm" id="f-fecha-hasta">
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button class="btn btn-primary btn-sm flex-grow-1" id="btn-buscar">
+                            <i class="bi bi-search"></i> Filtrar
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="btn-limpiar">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fecha / Hora</th>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Entidad</th>
+                                <th>ID Entidad</th>
+                                <th>IP</th>
+                                <th>Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bitacora-tbody">
+                            <tr><td colspan="7">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border" role="status"></div>
+                                    <span>Cargando registros...</span>
+                                </div>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info" id="pagination-info"></div>
+                    <div id="pagination-controls"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Detalle de registro -->
+<div class="modal fade" id="modal-detalle" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-code-slash me-2 text-accent"></i>Detalle del Registro
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3" id="detalle-meta" style="display:none;">
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <span class="label">Usuario</span>
+                            <span class="value" id="det-usuario">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <span class="label">Acción</span>
+                            <span class="value" id="det-accion">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <span class="label">Entidad</span>
+                            <span class="value" id="det-entidad">—</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-row">
+                            <span class="label">Fecha</span>
+                            <span class="value" id="det-fecha">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <h6 class="section-title">
+                            <i class="bi bi-arrow-left-circle me-1 text-warning-custom"></i>Valor Anterior
+                        </h6>
+                        <div class="json-viewer" id="json-anterior">null</div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="section-title">
+                            <i class="bi bi-arrow-right-circle me-1 text-success-custom"></i>Valor Nuevo
+                        </h6>
+                        <div class="json-viewer" id="json-nuevo">null</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+let currentPage = 1;
+const modalDet = new bootstrap.Modal(document.getElementById('modal-detalle'));
+
+// Colores por tipo de acción
+const ACCION_COLORS = {
+    'crear':     { bg: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: 'rgba(16,185,129,0.3)' },
+    'create':    { bg: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: 'rgba(16,185,129,0.3)' },
+    'editar':    { bg: 'rgba(59,130,246,0.12)',  color: '#93c5fd', border: 'rgba(59,130,246,0.3)' },
+    'update':    { bg: 'rgba(59,130,246,0.12)',  color: '#93c5fd', border: 'rgba(59,130,246,0.3)' },
+    'eliminar':  { bg: 'rgba(239,68,68,0.12)',   color: '#fca5a5', border: 'rgba(239,68,68,0.3)' },
+    'delete':    { bg: 'rgba(239,68,68,0.12)',   color: '#fca5a5', border: 'rgba(239,68,68,0.3)' },
+    'login':     { bg: 'rgba(99,102,241,0.12)',  color: '#a5b4fc', border: 'rgba(99,102,241,0.3)' },
+    'logout':    { bg: 'rgba(100,116,139,0.12)', color: '#cbd5e1', border: 'rgba(100,116,139,0.3)' },
+    'aprobar':   { bg: 'rgba(16,185,129,0.12)',  color: '#6ee7b7', border: 'rgba(16,185,129,0.3)' },
+    'rechazar':  { bg: 'rgba(239,68,68,0.12)',   color: '#fca5a5', border: 'rgba(239,68,68,0.3)' },
+    'finalizar': { bg: 'rgba(59,130,246,0.12)',  color: '#93c5fd', border: 'rgba(59,130,246,0.3)' },
+};
+
+function accionBadge(accion) {
+    const key = (accion || '').toLowerCase();
+    const cfg = ACCION_COLORS[key] || { bg: 'rgba(100,116,139,0.12)', color: '#cbd5e1', border: 'rgba(100,116,139,0.3)' };
+    return `<span style="
+        display:inline-block; padding:2px 10px; border-radius:20px; font-size:0.72rem; font-weight:600;
+        background:${cfg.bg}; color:${cfg.color}; border:1px solid ${cfg.border}; white-space:nowrap;
+    ">${accion || '—'}</span>`;
+}
+
+$(function () {
+    Auth.check();
+    Auth.requireRole([1]);
+    Auth.loadUserUI();
+
+    loadUsuarios();
+    loadBitacora();
+
+    $('#btn-buscar').on('click', function () { currentPage = 1; loadBitacora(); });
+    $('#btn-limpiar').on('click', function () {
+        $('#f-usuario, #f-entidad, #f-fecha-desde, #f-fecha-hasta').val('');
+        currentPage = 1;
+        loadBitacora();
+    });
+
+    $(document).on('click', '#pagination-controls .page-link', function (e) {
+        e.preventDefault();
+        const page = parseInt($(this).data('page'));
+        if (page && page !== currentPage) { currentPage = page; loadBitacora(); }
+    });
+
+    // Click en ver detalle
+    $(document).on('click', '.btn-ver-detalle', function () {
+        const data = $(this).data('registro');
+        if (!data) return;
+
+        $('#det-usuario').text(data.usuario_nombre || data.usuario || '—');
+        $('#det-accion').html(accionBadge(data.accion));
+        $('#det-entidad').text((data.entidad || '—') + (data.entidad_id ? ' #' + data.entidad_id : ''));
+        $('#det-fecha').text(Utils.formatDateTime(data.created_at || data.fecha));
+        $('#detalle-meta').show();
+
+        $('#json-anterior').text(formatJSON(data.valor_anterior));
+        $('#json-nuevo').text(formatJSON(data.valor_nuevo));
+
+        modalDet.show();
+    });
+});
+
+function loadUsuarios() {
+    API.get('/admin/usuarios?per_page=100').then(function (res) {
+        const users = res.data || res.usuarios || [];
+        users.forEach(function (u) {
+            $('#f-usuario').append(`<option value="${u.id}">${u.nombre} ${u.apellido || ''}</option>`);
+        });
+    }).catch(function () {});
+}
+
+function buildParams() {
+    const p = { page: currentPage, per_page: 25 };
+    const usuario = $('#f-usuario').val();
+    const entidad = $('#f-entidad').val().trim();
+    const desde = $('#f-fecha-desde').val();
+    const hasta = $('#f-fecha-hasta').val();
+    if (usuario) p.usuario_id = usuario;
+    if (entidad) p.entidad = entidad;
+    if (desde) p.fecha_desde = desde;
+    if (hasta) p.fecha_hasta = hasta;
+    return '?' + $.param(p);
+}
+
+function loadBitacora() {
+    $('#bitacora-tbody').html('<tr><td colspan="7"><div class="loading-spinner"><div class="spinner-border"></div><span>Cargando...</span></div></td></tr>');
+
+    API.get('/admin/bitacora' + buildParams())
+        .then(function (res) {
+            const registros = res.data || res.registros || [];
+            const meta = res.meta || {};
+            const totalPages = meta.last_page || 1;
+            const total = meta.total || registros.length;
+
+            $('#pagination-info').text(`${total} registro${total !== 1 ? 's' : ''} de auditoría`);
+            $('#pagination-controls').html(Utils.paginationHTML(currentPage, totalPages));
+            renderBitacora(registros);
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al cargar bitácora');
+            $('#bitacora-tbody').html('<tr><td colspan="7"><div class="empty-state py-3"><p>Error al cargar datos</p></div></td></tr>');
+        });
+}
+
+function renderBitacora(registros) {
+    const $tbody = $('#bitacora-tbody');
+    if (!registros.length) {
+        $tbody.html(`<tr><td colspan="7">
+            <div class="empty-state py-4">
+                <div class="empty-icon"><i class="bi bi-journal-text"></i></div>
+                <h5>Sin registros</h5>
+                <p>No hay registros de auditoría para los filtros aplicados</p>
+            </div>
+        </td></tr>`);
+        return;
+    }
+
+    let html = '';
+    registros.forEach(function (r) {
+        // Encode data for button
+        const dataStr = JSON.stringify(r).replace(/"/g, '&quot;');
+
+        html += `<tr>
+            <td style="white-space:nowrap; font-size:0.8rem;">
+                ${Utils.formatDateTime(r.created_at || r.fecha)}
+            </td>
+            <td>
+                <div style="font-weight:600; color:var(--text-primary);">${r.usuario_nombre || r.usuario || '—'}</div>
+                ${r.usuario_correo ? `<div class="small text-muted-custom">${r.usuario_correo}</div>` : ''}
+            </td>
+            <td>${accionBadge(r.accion)}</td>
+            <td>
+                <span style="font-family:monospace; color:var(--text-secondary); font-size:0.82rem;">
+                    ${r.entidad || '—'}
+                </span>
+            </td>
+            <td class="text-muted-custom">${r.entidad_id || '—'}</td>
+            <td>
+                <span style="font-family:monospace; font-size:0.78rem; color:var(--text-muted);">
+                    ${r.ip || '—'}
+                </span>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary btn-icon btn-ver-detalle"
+                        data-registro="${dataStr}" title="Ver detalle">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+    $tbody.html(html);
+
+    // Re-parse data attributes properly
+    $tbody.find('.btn-ver-detalle').each(function () {
+        const raw = $(this).attr('data-registro');
+        try {
+            $(this).data('registro', JSON.parse(raw.replace(/&quot;/g, '"')));
+        } catch (e) {}
+    });
+}
+
+function formatJSON(value) {
+    if (value === null || value === undefined) return 'null';
+    try {
+        if (typeof value === 'string') {
+            const parsed = JSON.parse(value);
+            return JSON.stringify(parsed, null, 2);
+        }
+        return JSON.stringify(value, null, 2);
+    } catch (e) {
+        return String(value);
+    }
+}
+</script>
+</body>
+</html>

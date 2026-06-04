@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Detalle de Gasto</title>
+    <meta name="description" content="Detalle completo del gasto empresarial">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div>
+                <div class="brand-name">GastosEmp</div>
+                <div class="brand-sub">Sistema de Gastos</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item">
+                <a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+            </div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#submenu-gastos" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="submenu-gastos">
+                    <div class="nav-submenu">
+                        <a class="nav-link active" href="lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="nuevo.html" id="link-nuevo"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#submenu-admin" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-admin">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../admin/usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="../admin/areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="../admin/proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="../admin/presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="../admin/bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#submenu-reportes" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-reportes">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Detalle de Gasto</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="lista.html">Gastos</a></li>
+                        <li class="breadcrumb-item active" id="breadcrumb-folio">Detalle</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <a href="lista.html" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+        </header>
+
+        <div class="content-area" id="detalle-content">
+            <div class="loading-spinner py-5">
+                <div class="spinner-border" role="status"></div>
+                <span>Cargando detalle...</span>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Rechazar -->
+<div class="modal fade" id="modal-rechazar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-x-circle text-danger me-2"></i>Rechazar Gasto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-secondary mb-3">Indica el motivo del rechazo (mínimo 10 caracteres).</p>
+                <textarea class="form-control" id="motivo-rechazo" rows="4"
+                          placeholder="Descripción del motivo de rechazo..."></textarea>
+                <div class="small text-muted-custom mt-1">
+                    <span id="chars-count">0</span> caracteres (mínimo 10)
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btn-confirmar-rechazo">
+                    <i class="bi bi-x-circle me-1"></i> Confirmar Rechazo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+let gastoId = null;
+let gastoData = null;
+
+$(function () {
+    Auth.check();
+    Auth.loadUserUI();
+
+    if (!Auth.hasRole(1, 2)) {
+        $('#link-nuevo').hide();
+    }
+
+    gastoId = Utils.getQueryParam('id');
+    if (!gastoId) {
+        window.location.href = 'lista.html';
+        return;
+    }
+
+    loadGasto();
+
+    // Char counter for rechazo
+    $('#motivo-rechazo').on('input', function () {
+        $('#chars-count').text($(this).val().length);
+    });
+});
+
+function loadGasto() {
+    API.get('/gastos/' + gastoId)
+        .then(function (res) {
+            gastoData = res.data || res;
+            renderDetalle();
+        })
+        .catch(function (err) {
+            $('#detalle-content').html(`<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>${err.message || 'Error al cargar el gasto'}</div>`);
+        });
+}
+
+function renderDetalle() {
+    const g = gastoData;
+    const user = Auth.getUser();
+    const esClave = g.estatus_clave || g.estado_clave || g.estado || 'borrador';
+    const esNombre = g.estatus_nombre || g.estado_nombre || g.estado || 'Borrador';
+    const esMio = user && (g.usuario_id === user.id || g.capturista_id === user.id);
+
+    $('#breadcrumb-folio').text(g.folio || '#' + g.id);
+
+    // Build action buttons
+    let acciones = '';
+    if (esClave === 'borrador' && (Auth.hasRole(1) || (Auth.hasRole(2) && esMio))) {
+        acciones += `<a href="nuevo.html?id=${g.id}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>Editar</a>`;
+        acciones += `<button class="btn btn-warning" id="btn-enviar"><i class="bi bi-send me-1"></i>Enviar a Aprobación</button>`;
+    }
+    if (esClave === 'pendiente' && Auth.hasRole(1, 3)) {
+        acciones += `<button class="btn btn-success" id="btn-aprobar"><i class="bi bi-check-circle me-1"></i>Aprobar</button>`;
+        acciones += `<button class="btn btn-danger" id="btn-rechazar" data-bs-toggle="modal" data-bs-target="#modal-rechazar"><i class="bi bi-x-circle me-1"></i>Rechazar</button>`;
+    }
+    if (esClave === 'aprobado' && Auth.hasRole(1, 4)) {
+        acciones += `<button class="btn btn-primary" id="btn-finalizar"><i class="bi bi-flag-fill me-1"></i>Finalizar</button>`;
+    }
+
+    // Rejection alert
+    const rechazAlerta = (esClave === 'rechazado' && g.motivo_rechazo)
+        ? `<div class="rejection-alert mb-4">
+                <i class="bi bi-exclamation-octagon"></i>
+                <div>
+                    <div style="font-weight:600; color:var(--danger);">Motivo de rechazo</div>
+                    <div class="mt-1" style="color:var(--text-secondary);">${g.motivo_rechazo}</div>
+                </div>
+           </div>`
+        : '';
+
+    // Conceptos table
+    let conceptosHTML = '';
+    if (g.conceptos && g.conceptos.length > 0) {
+        let rows = '';
+        g.conceptos.forEach(function (c) {
+            rows += `<tr>
+                <td>${c.descripcion || c.clave_prod_serv || '—'}</td>
+                <td>${c.cantidad || '1'}</td>
+                <td>${Utils.formatMoney(c.valor_unitario || c.valorUnitario || 0)}</td>
+                <td style="color:var(--accent); font-weight:600;">${Utils.formatMoney(c.importe || 0)}</td>
+            </tr>`;
+        });
+        conceptosHTML = `
+            <div class="card mt-4">
+                <div class="card-header"><h5><i class="bi bi-list-check me-2 text-accent"></i>Conceptos del CFDI</h5></div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead><tr><th>Descripción</th><th>Cantidad</th><th>Valor Unitario</th><th>Importe</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    // Timeline
+    const timelineItems = buildTimeline(g);
+
+    const html = `
+        ${rechazAlerta}
+
+        <!-- Header -->
+        <div class="detail-header">
+            <div>
+                <div class="detail-folio">${g.folio || 'Gasto #' + g.id}</div>
+                <div class="detail-meta">
+                    <i class="bi bi-calendar3 me-1"></i>${Utils.formatDate(g.fecha_carga || g.created_at)}
+                    &nbsp;•&nbsp;
+                    <i class="bi bi-person me-1"></i>${g.capturista_nombre || g.usuario_nombre || '—'}
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                ${Utils.statusBadge(esClave, esNombre)}
+                <div class="d-flex gap-2" id="action-buttons">${acciones}</div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Left: General data -->
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5><i class="bi bi-info-circle me-2 text-accent"></i>Datos Generales</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="detail-row">
+                                    <span class="label">Proveedor</span>
+                                    <span class="value">${g.proveedor_nombre || g.proveedor || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">RFC Proveedor</span>
+                                    <span class="value font-monospace">${g.proveedor_rfc || g.rfc_emisor || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">Área</span>
+                                    <span class="value">${g.area_nombre || g.area || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-row">
+                                    <span class="label">Concepto</span>
+                                    <span class="value">${g.concepto || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">Categoría</span>
+                                    <span class="value">${g.categoria_nombre || g.categoria || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">Cuenta Contable</span>
+                                    <span class="value">${g.cuenta_nombre || g.cuenta || '—'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Fiscal data -->
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5><i class="bi bi-file-earmark-text me-2 text-accent"></i>Datos Fiscales (CFDI)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="detail-row">
+                                    <span class="label">UUID / Folio Fiscal</span>
+                                    <span class="value font-monospace small">${g.uuid || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">RFC Emisor</span>
+                                    <span class="value font-monospace">${g.rfc_emisor || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">RFC Receptor</span>
+                                    <span class="value font-monospace">${g.rfc_receptor || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">Fecha Emisión</span>
+                                    <span class="value">${Utils.formatDateTime(g.fecha_emision)}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="detail-row">
+                                    <span class="label">Forma de Pago</span>
+                                    <span class="value">${g.forma_pago || '—'}</span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="detail-row">
+                                    <span class="label">Subtotal</span>
+                                    <span class="value">${Utils.formatMoney(g.subtotal)}</span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="detail-row">
+                                    <span class="label">IVA</span>
+                                    <span class="value">${Utils.formatMoney(g.iva)}</span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="detail-row">
+                                    <span class="label">Total</span>
+                                    <span class="value" style="font-size:1.1rem; font-weight:700; color:var(--success);">${Utils.formatMoney(g.total)}</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="detail-row">
+                                    <span class="label">Uso CFDI</span>
+                                    <span class="value">${g.uso_cfdi || '—'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        ${conceptosHTML}
+
+        <!-- Timeline -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="bi bi-clock-history me-2 text-accent"></i>Historial de Estados</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">${timelineItems}</div>
+            </div>
+        </div>
+    `;
+
+    $('#detalle-content').html(html);
+    bindActionButtons(g, esClave, esMio);
+}
+
+function buildTimeline(g) {
+    const estados = [
+        { key: 'borrador', label: 'Borrador', icon: 'bi-pencil', dateField: 'fecha_carga' },
+        { key: 'pendiente', label: 'Enviado a Aprobación', icon: 'bi-send', dateField: 'fecha_envio' },
+        { key: 'aprobado', label: 'Aprobado', icon: 'bi-check-circle', dateField: 'fecha_aprobacion' },
+        { key: 'finalizado', label: 'Finalizado', icon: 'bi-flag-fill', dateField: 'fecha_finalizacion' },
+    ];
+
+    const esClave = g.estatus_clave || g.estado_clave || g.estado || 'borrador';
+
+    // If rejected, insert after pendiente
+    if (esClave === 'rechazado') {
+        estados.splice(2, 0, { key: 'rechazado', label: 'Rechazado', icon: 'bi-x-circle', dateField: 'fecha_rechazo' });
+    }
+
+    const order = ['borrador', 'pendiente', 'aprobado', 'rechazado', 'finalizado'];
+    const currentIdx = order.indexOf(esClave);
+
+    let html = '';
+    estados.forEach(function (e, i) {
+        const idx = order.indexOf(e.key);
+        let iconClass = 'muted';
+        if (e.key === esClave) {
+            iconClass = e.key === 'rechazado' ? 'danger' : e.key === 'aprobado' ? 'success' : 'active';
+        } else if (idx < currentIdx) {
+            iconClass = 'success';
+        }
+
+        const fecha = g[e.dateField] ? Utils.formatDateTime(g[e.dateField]) : (idx <= currentIdx ? 'Completado' : 'Pendiente');
+
+        html += `<div class="timeline-item">
+            <div class="timeline-icon ${iconClass}"><i class="bi ${e.icon}"></i></div>
+            <div class="timeline-content">
+                <div class="timeline-title">${e.label}</div>
+                <div class="timeline-date">${fecha}</div>
+                ${e.key === 'rechazado' && g.motivo_rechazo ? `<div class="small mt-1" style="color:var(--danger);">${g.motivo_rechazo}</div>` : ''}
+            </div>
+        </div>`;
+    });
+    return html;
+}
+
+function bindActionButtons(g, esClave, esMio) {
+    // Enviar
+    $('#btn-enviar').on('click', function () {
+        Utils.confirm('¿Enviar este gasto a aprobación?', function () {
+            Utils.setLoading('#btn-enviar', true, 'Enviando...');
+            API.post('/gastos/' + g.id + '/enviar', {})
+                .then(function () {
+                    Utils.showSuccess('Gasto enviado a aprobación');
+                    loadGasto();
+                })
+                .catch(function (err) {
+                    Utils.showError(err.message);
+                    Utils.setLoading('#btn-enviar', false);
+                });
+        }, { title: 'Enviar a Aprobación', confirmText: 'Sí, enviar', icon: 'question' });
+    });
+
+    // Aprobar
+    $('#btn-aprobar').on('click', function () {
+        Utils.confirm('¿Aprobar este gasto?', function () {
+            Utils.setLoading('#btn-aprobar', true, 'Aprobando...');
+            API.post('/gastos/' + g.id + '/aprobar', {})
+                .then(function () {
+                    Utils.showSuccess('Gasto aprobado correctamente');
+                    loadGasto();
+                })
+                .catch(function (err) {
+                    Utils.showError(err.message);
+                    Utils.setLoading('#btn-aprobar', false);
+                });
+        }, { title: 'Aprobar Gasto', confirmText: 'Sí, aprobar', icon: 'question' });
+    });
+
+    // Rechazar - confirmar en modal
+    $('#btn-confirmar-rechazo').on('click', function () {
+        const motivo = $('#motivo-rechazo').val().trim();
+        if (motivo.length < 10) {
+            $('#motivo-rechazo').addClass('is-invalid');
+            Utils.showError('El motivo de rechazo debe tener al menos 10 caracteres.');
+            return;
+        }
+        $('#motivo-rechazo').removeClass('is-invalid');
+
+        Utils.setLoading('#btn-confirmar-rechazo', true, 'Rechazando...');
+        API.post('/gastos/' + g.id + '/rechazar', { motivo })
+            .then(function () {
+                $('#modal-rechazar').modal('hide');
+                Utils.showSuccess('Gasto rechazado');
+                loadGasto();
+            })
+            .catch(function (err) {
+                Utils.showError(err.message);
+                Utils.setLoading('#btn-confirmar-rechazo', false);
+            });
+    });
+
+    // Limpiar modal al abrir
+    $('#modal-rechazar').on('show.bs.modal', function () {
+        $('#motivo-rechazo').val('').removeClass('is-invalid');
+        $('#chars-count').text('0');
+    });
+
+    // Finalizar
+    $('#btn-finalizar').on('click', function () {
+        Utils.confirm('¿Finalizar el pago de este gasto?', function () {
+            Utils.setLoading('#btn-finalizar', true, 'Finalizando...');
+            API.post('/gastos/' + g.id + '/finalizar', {})
+                .then(function () {
+                    Utils.showSuccess('Gasto finalizado correctamente');
+                    loadGasto();
+                })
+                .catch(function (err) {
+                    Utils.showError(err.message);
+                    Utils.setLoading('#btn-finalizar', false);
+                });
+        }, { title: 'Finalizar Gasto', confirmText: 'Sí, finalizar', icon: 'question' });
+    });
+}
+</script>
+</body>
+</html>

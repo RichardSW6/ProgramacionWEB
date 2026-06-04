@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Gestión de Usuarios</title>
+    <meta name="description" content="Administración de usuarios del sistema">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div><div class="brand-name">GastosEmp</div><div class="brand-sub">Sistema de Gastos</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item"><a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#submenu-gastos" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-gastos">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="../gastos/nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#submenu-admin" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="submenu-admin">
+                    <div class="nav-submenu">
+                        <a class="nav-link active" href="usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#submenu-reportes" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-reportes">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Gestión de Usuarios</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item active">Usuarios</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <button class="btn btn-primary btn-sm" id="btn-nuevo-usuario">
+                    <i class="bi bi-person-plus"></i> Nuevo Usuario
+                </button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label">Buscar por nombre o correo</label>
+                        <input type="text" class="form-control form-control-sm" id="f-busqueda" placeholder="Nombre, correo...">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Rol</label>
+                        <select class="form-select form-select-sm" id="f-rol">
+                            <option value="">Todos los roles</option>
+                            <option value="1">Administrador</option>
+                            <option value="2">Capturista</option>
+                            <option value="3">Jefe de Área</option>
+                            <option value="4">Cuentas por Pagar</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+                        <button class="btn btn-primary btn-sm flex-grow-1" id="btn-buscar">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="btn-limpiar"><i class="bi bi-x-circle"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre Completo</th>
+                                <th>Correo</th>
+                                <th>Rol</th>
+                                <th>Área</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuarios-tbody">
+                            <tr><td colspan="7"><div class="loading-spinner"><div class="spinner-border"></div><span>Cargando...</span></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info" id="pagination-info"></div>
+                    <div id="pagination-controls"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Crear/Editar Usuario -->
+<div class="modal fade" id="modal-usuario" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-usuario-title">Nuevo Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-usuario" novalidate>
+                    <input type="hidden" id="u-id">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="u-nombre" required placeholder="Nombre">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Apellido <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="u-apellido" required placeholder="Apellido">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="u-correo" required placeholder="usuario@empresa.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" id="u-password-label">Contraseña <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="u-password" placeholder="••••••••">
+                                <button type="button" class="input-group-text password-toggle" onclick="togglePwd('#u-password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text" id="u-password-hint"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Rol <span class="text-danger">*</span></label>
+                            <select class="form-select" id="u-rol" required>
+                                <option value="">Seleccionar rol...</option>
+                                <option value="1">Administrador</option>
+                                <option value="2">Capturista</option>
+                                <option value="3">Jefe de Área</option>
+                                <option value="4">Cuentas por Pagar</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Área (opcional)</label>
+                            <select class="form-select" id="u-area">
+                                <option value="">Sin área</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="u-activo" checked>
+                                <label class="form-check-label" for="u-activo">Usuario activo</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-usuario">
+                    <i class="bi bi-floppy me-1"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+let currentPage = 1;
+const modalU = new bootstrap.Modal(document.getElementById('modal-usuario'));
+
+$(function () {
+    Auth.check();
+    Auth.requireRole([1]);
+    Auth.loadUserUI();
+
+    loadAreas();
+    loadUsuarios();
+
+    $('#btn-nuevo-usuario').on('click', function () {
+        openModalCreate();
+    });
+
+    $('#btn-buscar').on('click', function () { currentPage = 1; loadUsuarios(); });
+    $('#btn-limpiar').on('click', function () { $('#f-busqueda').val(''); $('#f-rol').val(''); currentPage = 1; loadUsuarios(); });
+    $('#f-busqueda').on('keydown', function (e) { if (e.key === 'Enter') { currentPage = 1; loadUsuarios(); } });
+
+    $('#btn-guardar-usuario').on('click', guardarUsuario);
+
+    $('#modal-usuario').on('show.bs.modal', function () {
+        clearFormErrors();
+    });
+
+    $(document).on('click', '#pagination-controls .page-link', function (e) {
+        e.preventDefault();
+        const page = parseInt($(this).data('page'));
+        if (page && page !== currentPage) { currentPage = page; loadUsuarios(); }
+    });
+});
+
+function loadAreas() {
+    API.get('/admin/areas').then(function (res) {
+        const areas = res.data || res.areas || [];
+        areas.forEach(function (a) {
+            $('#u-area').append(`<option value="${a.id}">${a.nombre}</option>`);
+        });
+    }).catch(function () {});
+}
+
+function loadUsuarios() {
+    $('#usuarios-tbody').html('<tr><td colspan="7"><div class="loading-spinner"><div class="spinner-border"></div><span>Cargando...</span></div></td></tr>');
+    const params = { page: currentPage, per_page: 15 };
+    const busq = $('#f-busqueda').val().trim();
+    const rol = $('#f-rol').val();
+    if (busq) params.busqueda = busq;
+    if (rol) params.rol_id = rol;
+
+    API.get('/admin/usuarios?' + $.param(params))
+        .then(function (res) {
+            const usuarios = res.data || res.usuarios || [];
+            const meta = res.meta || {};
+            const totalPages = meta.last_page || 1;
+            const total = meta.total || usuarios.length;
+
+            $('#pagination-info').text(`${total} usuario${total !== 1 ? 's' : ''}`);
+            $('#pagination-controls').html(Utils.paginationHTML(currentPage, totalPages));
+            renderUsuarios(usuarios);
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al cargar usuarios');
+            $('#usuarios-tbody').html('<tr><td colspan="7"><div class="empty-state py-3"><p>Error al cargar datos</p></div></td></tr>');
+        });
+}
+
+function renderUsuarios(usuarios) {
+    const $tbody = $('#usuarios-tbody');
+    if (!usuarios.length) {
+        $tbody.html('<tr><td colspan="7"><div class="empty-state py-4"><div class="empty-icon"><i class="bi bi-people"></i></div><p>No hay usuarios registrados</p></div></td></tr>');
+        return;
+    }
+    let html = '';
+    usuarios.forEach(function (u, i) {
+        const activo = u.activo !== false && u.activo !== 0;
+        html += `<tr>
+            <td class="text-muted-custom">${i + 1}</td>
+            <td style="color:var(--text-primary); font-weight:600;">${u.nombre || ''} ${u.apellido || ''}</td>
+            <td>${u.correo || '—'}</td>
+            <td>${Utils.roleBadge(u.rol_id)}</td>
+            <td>${u.area_nombre || u.area || '—'}</td>
+            <td><span class="status-badge ${activo ? 'status-aprobado' : 'status-rechazado'}">${activo ? 'Activo' : 'Inactivo'}</span></td>
+            <td style="white-space:nowrap;">
+                <button class="btn btn-sm btn-outline-primary btn-icon btn-edit-usuario" data-id="${u.id}" title="Editar"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm btn-danger btn-icon btn-delete-usuario" data-id="${u.id}" data-nombre="${u.nombre} ${u.apellido}" title="Eliminar"><i class="bi bi-trash3"></i></button>
+            </td>
+        </tr>`;
+    });
+    $tbody.html(html);
+
+    // Edit
+    $(document).off('click', '.btn-edit-usuario').on('click', '.btn-edit-usuario', function () {
+        const id = $(this).data('id');
+        loadUserForEdit(id);
+    });
+
+    // Delete
+    $(document).off('click', '.btn-delete-usuario').on('click', '.btn-delete-usuario', function () {
+        const id = $(this).data('id');
+        const nombre = $(this).data('nombre');
+        Utils.confirm(`¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`, function () {
+            API.delete('/admin/usuarios/' + id)
+                .then(function () { Utils.showSuccess('Usuario eliminado'); loadUsuarios(); })
+                .catch(function (err) { Utils.showError(err.message); });
+        }, { title: 'Eliminar Usuario', confirmText: 'Sí, eliminar', icon: 'warning' });
+    });
+}
+
+function openModalCreate() {
+    $('#modal-usuario-title').text('Nuevo Usuario');
+    $('#form-usuario')[0].reset();
+    $('#u-id').val('');
+    $('#u-activo').prop('checked', true);
+    $('#u-password-label').html('Contraseña <span class="text-danger">*</span>');
+    $('#u-password-hint').text('');
+    $('#u-password').attr('required', true);
+    clearFormErrors();
+    modalU.show();
+}
+
+function loadUserForEdit(id) {
+    API.get('/admin/usuarios/' + id).then(function (res) {
+        const u = res.data || res;
+        $('#modal-usuario-title').text('Editar Usuario');
+        $('#u-id').val(u.id);
+        $('#u-nombre').val(u.nombre);
+        $('#u-apellido').val(u.apellido);
+        $('#u-correo').val(u.correo);
+        $('#u-rol').val(u.rol_id);
+        $('#u-area').val(u.area_id || '');
+        $('#u-activo').prop('checked', u.activo !== false && u.activo !== 0);
+        $('#u-password').val('').attr('required', false);
+        $('#u-password-label').html('Contraseña <span class="text-muted-custom">(dejar vacío para no cambiar)</span>');
+        clearFormErrors();
+        modalU.show();
+    }).catch(function (err) { Utils.showError(err.message); });
+}
+
+function guardarUsuario() {
+    clearFormErrors();
+    const id = $('#u-id').val();
+    const data = {
+        nombre: $('#u-nombre').val().trim(),
+        apellido: $('#u-apellido').val().trim(),
+        correo: $('#u-correo').val().trim(),
+        rol_id: $('#u-rol').val(),
+        area_id: $('#u-area').val() || null,
+        activo: $('#u-activo').is(':checked') ? 1 : 0,
+    };
+    const pwd = $('#u-password').val();
+    if (pwd) data.password = pwd;
+
+    // Basic validation
+    if (!data.nombre) { Utils.showError('El nombre es requerido.'); return; }
+    if (!data.correo) { Utils.showError('El correo es requerido.'); return; }
+    if (!data.rol_id) { Utils.showError('Selecciona un rol.'); return; }
+    if (!id && !pwd) { Utils.showError('La contraseña es requerida para nuevos usuarios.'); return; }
+
+    Utils.setLoading('#btn-guardar-usuario', true, 'Guardando...');
+
+    const promise = id
+        ? API.put('/admin/usuarios/' + id, data)
+        : API.post('/admin/usuarios', data);
+
+    promise.then(function () {
+        Utils.showSuccess(id ? 'Usuario actualizado' : 'Usuario creado exitosamente');
+        modalU.hide();
+        loadUsuarios();
+    }).catch(function (err) {
+        Utils.showError(err.message || 'Error al guardar usuario');
+    }).finally(function () {
+        Utils.setLoading('#btn-guardar-usuario', false);
+    });
+}
+
+function clearFormErrors() {
+    $('#form-usuario .is-invalid').removeClass('is-invalid');
+    $('#form-usuario .invalid-feedback').remove();
+}
+
+function togglePwd(selector) {
+    const $input = $(selector);
+    $input.attr('type', $input.attr('type') === 'password' ? 'text' : 'password');
+}
+</script>
+</body>
+</html>

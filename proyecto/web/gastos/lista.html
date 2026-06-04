@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Lista de Gastos</title>
+    <meta name="description" content="Lista y gestión de gastos empresariales">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div>
+                <div class="brand-name">GastosEmp</div>
+                <div class="brand-sub">Sistema de Gastos</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item">
+                <a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+            </div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#submenu-gastos" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="submenu-gastos">
+                    <div class="nav-submenu">
+                        <a class="nav-link active" href="lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="nuevo.html" id="link-nuevo-gasto"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#submenu-admin" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-admin">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../admin/usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="../admin/areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="../admin/proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="../admin/presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="../admin/bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#submenu-reportes" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-reportes">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Lista de Gastos</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item active">Gastos</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <a href="nuevo.html" class="btn btn-primary btn-sm" id="btn-nuevo-top">
+                    <i class="bi bi-plus-lg"></i> Nuevo Gasto
+                </a>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <form id="filter-form">
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select form-select-sm" id="f-estado">
+                                <option value="">Todos</option>
+                                <option value="borrador">Borrador</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="aprobado">Aprobado</option>
+                                <option value="rechazado">Rechazado</option>
+                                <option value="finalizado">Finalizado</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <label class="form-label">Fecha desde</label>
+                            <input type="date" class="form-control form-control-sm" id="f-fecha-desde">
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <label class="form-label">Fecha hasta</label>
+                            <input type="date" class="form-control form-control-sm" id="f-fecha-hasta">
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-2" id="f-area-wrap">
+                            <label class="form-label">Área</label>
+                            <select class="form-select form-select-sm" id="f-area">
+                                <option value="">Todas</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-2">
+                            <label class="form-label">Proveedor / Búsqueda</label>
+                            <input type="text" class="form-control form-control-sm" id="f-busqueda" placeholder="Folio, proveedor...">
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-2 d-flex align-items-end gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn-limpiar">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="d-flex align-items-center justify-content-between p-3 border-bottom" style="border-color: var(--border-color) !important;">
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="form-label mb-0 text-secondary small">Mostrar</label>
+                        <select class="form-select form-select-sm" id="per-page" style="width:80px;">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <span class="text-secondary small">registros</span>
+                    </div>
+                    <div id="table-info" class="text-muted-custom small"></div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table mb-0" id="gastos-table">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Proveedor</th>
+                                <th>Concepto</th>
+                                <th>Área</th>
+                                <th>Total MXN</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gastos-tbody">
+                            <tr><td colspan="8">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border" role="status"></div>
+                                    <span>Cargando gastos...</span>
+                                </div>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-wrapper">
+                    <div class="pagination-info" id="pagination-info"></div>
+                    <div id="pagination-controls"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+let currentPage = 1;
+let totalPages = 1;
+let perPage = 10;
+
+$(function () {
+    Auth.check();
+    Auth.loadUserUI();
+
+    // Ocultar botones según rol
+    if (!Auth.hasRole(1, 2)) {
+        $('#btn-nuevo-top, #link-nuevo-gasto').hide();
+    }
+
+    // Ocultar filtro de área para capturistas
+    if (!Auth.hasRole(1, 3, 4)) {
+        $('#f-area-wrap').hide();
+    }
+
+    // Cargar áreas para filtro
+    if (Auth.hasRole(1, 3, 4)) {
+        API.get('/admin/areas').then(function (res) {
+            const areas = res.data || res.areas || [];
+            areas.forEach(function (a) {
+                $('#f-area').append(`<option value="${a.id}">${a.nombre}</option>`);
+            });
+        }).catch(function () {});
+    }
+
+    loadGastos();
+
+    // Events
+    $('#filter-form').on('submit', function (e) {
+        e.preventDefault();
+        currentPage = 1;
+        loadGastos();
+    });
+
+    $('#btn-limpiar').on('click', function () {
+        $('#filter-form')[0].reset();
+        currentPage = 1;
+        loadGastos();
+    });
+
+    $('#per-page').on('change', function () {
+        perPage = parseInt($(this).val());
+        currentPage = 1;
+        loadGastos();
+    });
+
+    $(document).on('click', '#pagination-controls .page-link', function (e) {
+        e.preventDefault();
+        const page = parseInt($(this).data('page'));
+        if (page && page !== currentPage && page >= 1 && page <= totalPages) {
+            currentPage = page;
+            loadGastos();
+        }
+    });
+});
+
+function buildParams() {
+    const p = {
+        page: currentPage,
+        per_page: perPage,
+    };
+    const estado = $('#f-estado').val();
+    const desde = $('#f-fecha-desde').val();
+    const hasta = $('#f-fecha-hasta').val();
+    const area = $('#f-area').val();
+    const busq = $('#f-busqueda').val().trim();
+
+    if (estado) p.estado = estado;
+    if (desde) p.fecha_desde = desde;
+    if (hasta) p.fecha_hasta = hasta;
+    if (area) p.area_id = area;
+    if (busq) p.busqueda = busq;
+
+    return '?' + $.param(p);
+}
+
+function loadGastos() {
+    Utils.showLoading('#gastos-tbody', 'Cargando gastos...');
+    $('#gastos-tbody').html('<tr><td colspan="8"><div class="loading-spinner"><div class="spinner-border" role="status"></div><span>Cargando...</span></div></td></tr>');
+
+    API.get('/gastos' + buildParams())
+        .then(function (res) {
+            const gastos = res.data || res.gastos || [];
+            const meta = res.meta || {};
+            totalPages = meta.last_page || 1;
+            const total = meta.total || gastos.length;
+            const from = meta.from || ((currentPage - 1) * perPage + 1);
+            const to = meta.to || Math.min(from + gastos.length - 1, total);
+
+            $('#pagination-info').text(`Mostrando ${from}–${to} de ${total} registros`);
+            $('#table-info').text(`${total} resultado${total !== 1 ? 's' : ''}`);
+
+            renderTable(gastos);
+            $('#pagination-controls').html(Utils.paginationHTML(currentPage, totalPages));
+        })
+        .catch(function (err) {
+            $('#gastos-tbody').html('<tr><td colspan="8"><div class="empty-state py-3"><div class="empty-icon"><i class="bi bi-exclamation-triangle"></i></div><p>Error al cargar datos</p></div></td></tr>');
+            Utils.showError(err.message || 'Error al cargar gastos');
+        });
+}
+
+function renderTable(gastos) {
+    const user = Auth.getUser();
+    const $tbody = $('#gastos-tbody');
+
+    if (!gastos || gastos.length === 0) {
+        $tbody.html('<tr><td colspan="8"><div class="empty-state py-4"><div class="empty-icon"><i class="bi bi-inbox"></i></div><h5>Sin gastos</h5><p>No se encontraron gastos con los filtros seleccionados</p></div></td></tr>');
+        return;
+    }
+
+    let html = '';
+    gastos.forEach(function (g) {
+        const esClave = g.estatus_clave || g.estado_clave || g.estado || 'borrador';
+        const esNombre = g.estatus_nombre || g.estado_nombre || g.estado || 'Borrador';
+        const esMio = user && (g.usuario_id === user.id || g.capturista_id === user.id);
+        const esBorrador = esClave === 'borrador';
+        const proveedor = g.proveedor_nombre || g.proveedor || '—';
+        const rfc = g.rfc_emisor || g.proveedor_rfc || '';
+
+        let acciones = `<a href="detalle.html?id=${g.id}" class="btn btn-sm btn-secondary btn-icon" title="Ver detalle"><i class="bi bi-eye"></i></a> `;
+
+        if (esBorrador && (Auth.hasRole(1) || (Auth.hasRole(2) && esMio))) {
+            acciones += `<a href="nuevo.html?id=${g.id}" class="btn btn-sm btn-outline-primary btn-icon" title="Editar"><i class="bi bi-pencil"></i></a> `;
+            acciones += `<button class="btn btn-sm btn-warning btn-icon btn-enviar" data-id="${g.id}" title="Enviar a aprobación"><i class="bi bi-send"></i></button> `;
+        }
+
+        html += `<tr>
+            <td><a href="detalle.html?id=${g.id}" class="folio-link">${g.folio || '#' + g.id}</a></td>
+            <td>
+                <div style="font-weight:600; color:var(--text-primary);">${proveedor}</div>
+                ${rfc ? `<div class="small text-muted-custom">${rfc}</div>` : ''}
+            </td>
+            <td style="max-width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${g.concepto || '—'}</td>
+            <td>${g.area_nombre || g.area || '—'}</td>
+            <td style="color:var(--accent); font-weight:600;">${Utils.formatMoney(g.total)}</td>
+            <td>${Utils.statusBadge(esClave, esNombre)}</td>
+            <td>${Utils.formatDate(g.fecha_carga || g.created_at)}</td>
+            <td style="white-space:nowrap;">${acciones}</td>
+        </tr>`;
+    });
+    $tbody.html(html);
+
+    // Enviar a aprobación
+    $(document).off('click', '.btn-enviar').on('click', '.btn-enviar', function () {
+        const id = $(this).data('id');
+        Utils.confirm('¿Deseas enviar este gasto a aprobación?', function () {
+            API.post('/gastos/' + id + '/enviar', {})
+                .then(function () {
+                    Utils.showSuccess('Gasto enviado a aprobación');
+                    loadGastos();
+                })
+                .catch(function (err) {
+                    Utils.showError(err.message || 'Error al enviar gasto');
+                });
+        }, { title: 'Enviar a Aprobación', confirmText: 'Sí, enviar', icon: 'question' });
+    });
+}
+</script>
+</body>
+</html>

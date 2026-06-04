@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Presupuesto vs Ejecutado</title>
+    <meta name="description" content="Reporte comparativo de presupuesto asignado versus gasto ejecutado por área">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+    <style>
+        .chart-wrapper {
+            position: relative;
+            height: 340px;
+        }
+        .total-row {
+            background: rgba(59,130,246,0.08) !important;
+            border-top: 2px solid var(--accent) !important;
+            font-weight: 700;
+        }
+        .total-row td { color: var(--text-primary) !important; }
+        .kpi-banner {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(99,102,241,0.06));
+            border: 1px solid rgba(59,130,246,0.15);
+            border-radius: var(--border-radius);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div><div class="brand-name">GastosEmp</div><div class="brand-sub">Sistema de Gastos</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item"><a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#sg" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sg">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="../gastos/nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#sa" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sa">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../admin/usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="../admin/areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="../admin/proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="../admin/presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="../admin/bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#sr" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="sr">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link active" href="presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Presupuesto vs Ejecutado</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item">Reportes</li>
+                        <li class="breadcrumb-item active">Presupuesto vs Ejecutado</li>
+                    </ol>
+                </nav>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <form id="filter-form">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-2">
+                            <label class="form-label">Año <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control form-control-sm" id="f-anio"
+                                   min="2020" max="2099" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Mes</label>
+                            <select class="form-select form-select-sm" id="f-mes">
+                                <option value="">Año completo</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm flex-grow-1" id="btn-generar">
+                                <i class="bi bi-graph-up"></i> Generar
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2 align-items-center justify-content-end">
+                                <span class="small d-flex align-items-center gap-1">
+                                    <span style="display:inline-block;width:12px;height:12px;background:rgba(59,130,246,0.8);border-radius:2px;"></span>
+                                    <span class="text-muted-custom">Asignado</span>
+                                </span>
+                                <span class="small d-flex align-items-center gap-1">
+                                    <span style="display:inline-block;width:12px;height:12px;background:rgba(16,185,129,0.8);border-radius:2px;"></span>
+                                    <span class="text-muted-custom">Aprobado</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results -->
+            <div id="results-section" style="display:none;">
+                <!-- KPI banner -->
+                <div class="kpi-banner" id="kpi-banner">
+                    <div class="row g-3 text-center">
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted-custom mb-1">Total Asignado</div>
+                            <div style="font-size:1.3rem; font-weight:700; color:var(--accent);" id="kpi-asignado">—</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted-custom mb-1">Total Aprobado</div>
+                            <div style="font-size:1.3rem; font-weight:700; color:var(--success);" id="kpi-aprobado">—</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted-custom mb-1">Disponible</div>
+                            <div style="font-size:1.3rem; font-weight:700;" id="kpi-disponible">—</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="small text-muted-custom mb-1">% Ejecutado Global</div>
+                            <div style="font-size:1.3rem; font-weight:700;" id="kpi-percent">—</div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div id="kpi-progress"></div>
+                    </div>
+                </div>
+
+                <!-- Grouped bar chart -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-bar-chart-fill me-2 text-accent"></i>Presupuesto vs Ejecutado por Área</h5>
+                        <span class="text-muted-custom small" id="periodo-label"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <canvas id="chart-pve"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Área</th>
+                                    <th>Presupuesto Asignado</th>
+                                    <th>Total Aprobado</th>
+                                    <th>Disponible</th>
+                                    <th style="min-width:200px;">% Ejecutado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reporte-tbody"></tbody>
+                            <tfoot id="reporte-tfoot"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Initial state -->
+            <div id="initial-state" class="card">
+                <div class="card-body">
+                    <div class="empty-state py-5">
+                        <div class="empty-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                        <h5>Genera tu reporte</h5>
+                        <p>Selecciona el año y mes para comparar presupuesto asignado con el ejecutado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+const MESES = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+let chartInstance = null;
+
+$(function () {
+    Auth.check();
+    Auth.requireRole([1, 4]);
+    Auth.loadUserUI();
+
+    // Defaults
+    const now = new Date();
+    $('#f-anio').val(now.getFullYear());
+    $('#f-mes').val(now.getMonth() + 1);
+
+    $('#filter-form').on('submit', function (e) {
+        e.preventDefault();
+        generarReporte();
+    });
+});
+
+function buildParams() {
+    const p = { anio: $('#f-anio').val() };
+    const mes = $('#f-mes').val();
+    if (mes) p.mes = mes;
+    return '?' + $.param(p);
+}
+
+function generarReporte() {
+    const anio = $('#f-anio').val();
+    if (!anio || anio < 2020) { Utils.showError('Ingresa un año válido.'); return; }
+
+    const mes = $('#f-mes').val();
+    const mesNombre = mes ? MESES[parseInt(mes)] : 'Año completo';
+    const periodoStr = `${mesNombre} ${anio}`;
+    $('#periodo-label').text(periodoStr);
+
+    Utils.setLoading('#btn-generar', true, 'Generando...');
+    $('#results-section').hide();
+    $('#initial-state').hide();
+
+    API.get('/reportes/presupuesto-vs-ejecutado' + buildParams())
+        .then(function (res) {
+            const data = res.data || res.reporte || [];
+            renderKPIs(data, periodoStr);
+            renderChart(data);
+            renderTable(data);
+            $('#results-section').show();
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al generar reporte');
+            $('#initial-state').show();
+        })
+        .finally(function () {
+            Utils.setLoading('#btn-generar', false);
+        });
+}
+
+function renderKPIs(data, periodo) {
+    let sumAsig = 0, sumApro = 0;
+    data.forEach(function (r) {
+        sumAsig += parseFloat(r.monto_asignado || r.presupuesto_asignado || 0);
+        sumApro += parseFloat(r.total_aprobado || 0);
+    });
+    const sumDisp = sumAsig - sumApro;
+    const percent = Utils.calcPercent(sumApro, sumAsig);
+    const colorClass = percent >= 100 ? 'text-danger-custom' : percent >= 80 ? 'text-warning-custom' : 'text-success-custom';
+
+    $('#kpi-asignado').text(Utils.formatMoney(sumAsig));
+    $('#kpi-aprobado').text(Utils.formatMoney(sumApro));
+    $('#kpi-disponible').text(Utils.formatMoney(Math.max(sumDisp, 0))).attr('class', colorClass).css('font-size', '1.3rem');
+    $('#kpi-percent').text(percent + '%').attr('class', colorClass).css('font-size', '1.3rem');
+    $('#kpi-progress').html(Utils.progressBar(percent));
+}
+
+function renderChart(data) {
+    if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+    }
+    if (!data || data.length === 0) return;
+
+    const labels = data.map(r => r.area_nombre || r.area || '—');
+    const asignados = data.map(r => parseFloat(r.monto_asignado || r.presupuesto_asignado || 0));
+    const aprobados = data.map(r => parseFloat(r.total_aprobado || 0));
+
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    const ctx = document.getElementById('chart-pve').getContext('2d');
+    chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Presupuesto Asignado',
+                    data: asignados,
+                    backgroundColor: 'rgba(59,130,246,0.7)',
+                    borderColor: 'rgba(59,130,246,1)',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderSkipped: false,
+                },
+                {
+                    label: 'Total Aprobado',
+                    data: aprobados,
+                    backgroundColor: 'rgba(16,185,129,0.7)',
+                    borderColor: 'rgba(16,185,129,1)',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderSkipped: false,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: '#94a3b8', padding: 20, font: { size: 12 } }
+                },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    borderColor: '#334155',
+                    borderWidth: 1,
+                    titleColor: '#f1f5f9',
+                    bodyColor: '#94a3b8',
+                    callbacks: {
+                        label: function (ctx) {
+                            return ' ' + ctx.dataset.label + ': ' + Utils.formatMoney(ctx.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(51,65,85,0.4)' },
+                    ticks: { color: '#94a3b8' }
+                },
+                y: {
+                    grid: { color: 'rgba(51,65,85,0.4)' },
+                    ticks: {
+                        color: '#94a3b8',
+                        callback: function (val) {
+                            if (val >= 1000000) return '$' + (val/1000000).toFixed(1) + 'M';
+                            if (val >= 1000) return '$' + (val/1000).toFixed(0) + 'K';
+                            return '$' + val;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function renderTable(data) {
+    const $tbody = $('#reporte-tbody');
+    const $tfoot = $('#reporte-tfoot');
+
+    if (!data || data.length === 0) {
+        $tbody.html('<tr><td colspan="5"><div class="empty-state py-4"><div class="empty-icon"><i class="bi bi-inbox"></i></div><p>No hay datos para el período seleccionado</p></div></td></tr>');
+        $tfoot.html('');
+        return;
+    }
+
+    let html = '';
+    let sumAsig = 0, sumApro = 0;
+
+    data.forEach(function (r) {
+        const asig = parseFloat(r.monto_asignado || r.presupuesto_asignado || 0);
+        const apro = parseFloat(r.total_aprobado || 0);
+        const disp = asig - apro;
+        const pct = Utils.calcPercent(apro, asig);
+        const dispClass = disp < 0 ? 'text-danger-custom' : disp < asig * 0.2 ? 'text-warning-custom' : 'text-success-custom';
+        sumAsig += asig;
+        sumApro += apro;
+
+        html += `<tr>
+            <td style="color:var(--text-primary);font-weight:600;">${r.area_nombre || r.area || '—'}</td>
+            <td style="color:var(--accent);font-weight:600;">${Utils.formatMoney(asig)}</td>
+            <td>${Utils.formatMoney(apro)}</td>
+            <td class="${dispClass}" style="font-weight:600;">${Utils.formatMoney(Math.max(disp, 0))}</td>
+            <td style="min-width:200px;">${Utils.progressBar(pct)}</td>
+        </tr>`;
+    });
+    $tbody.html(html);
+
+    const sumDisp = sumAsig - sumApro;
+    const totalPct = Utils.calcPercent(sumApro, sumAsig);
+    $tfoot.html(`<tr class="total-row">
+        <td>TOTALES</td>
+        <td>${Utils.formatMoney(sumAsig)}</td>
+        <td>${Utils.formatMoney(sumApro)}</td>
+        <td>${Utils.formatMoney(Math.max(sumDisp, 0))}</td>
+        <td>${Utils.progressBar(totalPct)}</td>
+    </tr>`);
+}
+</script>
+</body>
+</html>

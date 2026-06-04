@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Gestión de Presupuestos</title>
+    <meta name="description" content="Administración y seguimiento de presupuestos por área">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div><div class="brand-name">GastosEmp</div><div class="brand-sub">Sistema de Gastos</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item"><a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#sg" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sg">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="../gastos/nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#sa" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="sa">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link active" href="presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#sr" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sr">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Gestión de Presupuestos</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item active">Presupuestos</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <button class="btn btn-primary btn-sm" id="btn-nuevo-presupuesto">
+                    <i class="bi bi-plus-lg"></i> Nuevo Presupuesto
+                </button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label">Año</label>
+                        <input type="number" class="form-control form-control-sm" id="f-anio"
+                               min="2020" max="2099" placeholder="2024">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Mes</label>
+                        <select class="form-select form-select-sm" id="f-mes">
+                            <option value="">Todos</option>
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Área</label>
+                        <select class="form-select form-select-sm" id="f-area">
+                            <option value="">Todas las áreas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button class="btn btn-primary btn-sm flex-grow-1" id="btn-buscar">
+                            <i class="bi bi-search"></i> Filtrar
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="btn-limpiar">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary cards -->
+            <div class="row g-3 mb-4" id="summary-cards" style="display:none!important;">
+                <div class="col-md-4">
+                    <div class="card-stat">
+                        <div class="stat-icon blue"><i class="bi bi-wallet2"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="sum-asignado" style="font-size:1.2rem;">—</div>
+                            <div class="stat-label">Total Asignado</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-stat">
+                        <div class="stat-icon green"><i class="bi bi-check-circle"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="sum-aprobado" style="font-size:1.2rem;">—</div>
+                            <div class="stat-label">Total Aprobado</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-stat">
+                        <div class="stat-icon yellow"><i class="bi bi-graph-up-arrow"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="sum-disponible" style="font-size:1.2rem;">—</div>
+                            <div class="stat-label">Total Disponible</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Área</th>
+                                <th>Año</th>
+                                <th>Mes</th>
+                                <th>Presupuesto Asignado</th>
+                                <th>Total Aprobado</th>
+                                <th>Disponible</th>
+                                <th>% Ejecutado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="presupuestos-tbody">
+                            <tr><td colspan="8">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border" role="status"></div>
+                                    <span>Cargando presupuestos...</span>
+                                </div>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info" id="pagination-info"></div>
+                    <div id="pagination-controls"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Presupuesto -->
+<div class="modal fade" id="modal-presupuesto" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-pres-title">
+                    <i class="bi bi-wallet2 me-2 text-accent"></i>Nuevo Presupuesto
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-presupuesto" novalidate>
+                    <input type="hidden" id="pr-id">
+                    <div class="mb-3">
+                        <label class="form-label">Área <span class="text-danger">*</span></label>
+                        <select class="form-select" id="pr-area" required>
+                            <option value="">Seleccionar área...</option>
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label">Año <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="pr-anio" required
+                                   min="2020" max="2099" placeholder="2024">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Mes <span class="text-danger">*</span></label>
+                            <select class="form-select" id="pr-mes" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label">Monto Asignado (MXN) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="pr-monto" required
+                                   min="0" step="0.01" placeholder="0.00">
+                            <span class="input-group-text">MXN</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-presupuesto">
+                    <i class="bi bi-floppy me-1"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+const MESES = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+let currentPage = 1;
+const modalPr = new bootstrap.Modal(document.getElementById('modal-presupuesto'));
+
+$(function () {
+    Auth.check();
+    Auth.requireRole([1, 4]);
+    Auth.loadUserUI();
+
+    // Defaults: año y mes actual
+    const now = new Date();
+    $('#f-anio').val(now.getFullYear());
+    $('#f-mes').val(now.getMonth() + 1);
+    $('#pr-anio').val(now.getFullYear());
+
+    loadAreas();
+    loadPresupuestos();
+
+    $('#btn-nuevo-presupuesto').on('click', function () {
+        openModalCreate();
+    });
+
+    $('#btn-buscar').on('click', function () { currentPage = 1; loadPresupuestos(); });
+    $('#btn-limpiar').on('click', function () {
+        $('#f-anio').val(new Date().getFullYear());
+        $('#f-mes').val(new Date().getMonth() + 1);
+        $('#f-area').val('');
+        currentPage = 1;
+        loadPresupuestos();
+    });
+
+    $('#btn-guardar-presupuesto').on('click', guardarPresupuesto);
+
+    $(document).on('click', '#pagination-controls .page-link', function (e) {
+        e.preventDefault();
+        const page = parseInt($(this).data('page'));
+        if (page && page !== currentPage) { currentPage = page; loadPresupuestos(); }
+    });
+});
+
+function loadAreas() {
+    API.get('/admin/areas').then(function (res) {
+        const areas = res.data || res.areas || [];
+        areas.forEach(function (a) {
+            $('#f-area, #pr-area').append(`<option value="${a.id}">${a.nombre}</option>`);
+        });
+    }).catch(function () {});
+}
+
+function buildParams() {
+    const p = { page: currentPage, per_page: 20 };
+    const anio = $('#f-anio').val();
+    const mes = $('#f-mes').val();
+    const area = $('#f-area').val();
+    if (anio) p.anio = anio;
+    if (mes) p.mes = mes;
+    if (area) p.area_id = area;
+    return '?' + $.param(p);
+}
+
+function loadPresupuestos() {
+    $('#presupuestos-tbody').html('<tr><td colspan="8"><div class="loading-spinner"><div class="spinner-border"></div><span>Cargando...</span></div></td></tr>');
+
+    API.get('/admin/presupuestos' + buildParams())
+        .then(function (res) {
+            const presupuestos = res.data || res.presupuestos || [];
+            const meta = res.meta || {};
+            const totalPages = meta.last_page || 1;
+            const total = meta.total || presupuestos.length;
+
+            $('#pagination-info').text(`${total} registro${total !== 1 ? 's' : ''}`);
+            $('#pagination-controls').html(Utils.paginationHTML(currentPage, totalPages));
+
+            // Summary totals
+            if (presupuestos.length > 0) {
+                let sumAsig = 0, sumApro = 0;
+                presupuestos.forEach(function (p) {
+                    sumAsig += parseFloat(p.monto_asignado || 0);
+                    sumApro += parseFloat(p.total_aprobado || 0);
+                });
+                const sumDisp = sumAsig - sumApro;
+                $('#sum-asignado').text(Utils.formatMoney(sumAsig));
+                $('#sum-aprobado').text(Utils.formatMoney(sumApro));
+                $('#sum-disponible').text(Utils.formatMoney(Math.max(sumDisp, 0)));
+                $('#summary-cards').css('display', 'flex').show();
+            } else {
+                $('#summary-cards').hide();
+            }
+
+            renderPresupuestos(presupuestos);
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al cargar presupuestos');
+            $('#presupuestos-tbody').html('<tr><td colspan="8"><div class="empty-state py-3"><p>Error al cargar datos</p></div></td></tr>');
+        });
+}
+
+function renderPresupuestos(presupuestos) {
+    const $tbody = $('#presupuestos-tbody');
+    if (!presupuestos.length) {
+        $tbody.html(`<tr><td colspan="8">
+            <div class="empty-state py-4">
+                <div class="empty-icon"><i class="bi bi-wallet2"></i></div>
+                <h5>Sin presupuestos</h5>
+                <p>No hay presupuestos registrados para los filtros seleccionados</p>
+                <button class="btn btn-primary btn-sm" onclick="$('#btn-nuevo-presupuesto').click()">
+                    <i class="bi bi-plus"></i> Crear presupuesto
+                </button>
+            </div>
+        </td></tr>`);
+        return;
+    }
+
+    let html = '';
+    presupuestos.forEach(function (p) {
+        const asignado = parseFloat(p.monto_asignado || 0);
+        const aprobado = parseFloat(p.total_aprobado || 0);
+        const disponible = asignado - aprobado;
+        const percent = Utils.calcPercent(aprobado, asignado);
+        const dispClass = disponible < 0 ? 'text-danger-custom' : disponible < asignado * 0.2 ? 'text-warning-custom' : 'text-success-custom';
+
+        html += `<tr>
+            <td style="color:var(--text-primary); font-weight:600;">${p.area_nombre || p.area || '—'}</td>
+            <td>${p.anio || '—'}</td>
+            <td>${MESES[parseInt(p.mes)] || p.mes || '—'}</td>
+            <td style="color:var(--accent); font-weight:600;">${Utils.formatMoney(asignado)}</td>
+            <td>${Utils.formatMoney(aprobado)}</td>
+            <td class="${dispClass}" style="font-weight:600;">${Utils.formatMoney(Math.max(disponible, 0))}</td>
+            <td style="min-width:160px;">${Utils.progressBar(percent)}</td>
+            <td style="white-space:nowrap;">
+                <button class="btn btn-sm btn-outline-primary btn-icon btn-edit-pres"
+                        data-id="${p.id}" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+    $tbody.html(html);
+
+    // Edit
+    $(document).off('click', '.btn-edit-pres').on('click', '.btn-edit-pres', function () {
+        const id = $(this).data('id');
+        API.get('/admin/presupuestos/' + id).then(function (res) {
+            const p = res.data || res;
+            $('#modal-pres-title').html('<i class="bi bi-wallet2 me-2 text-accent"></i>Editar Presupuesto');
+            $('#pr-id').val(p.id);
+            $('#pr-area').val(p.area_id || '');
+            $('#pr-anio').val(p.anio);
+            $('#pr-mes').val(p.mes);
+            $('#pr-monto').val(p.monto_asignado);
+            modalPr.show();
+        }).catch(function (err) { Utils.showError(err.message); });
+    });
+}
+
+function openModalCreate() {
+    $('#modal-pres-title').html('<i class="bi bi-wallet2 me-2 text-accent"></i>Nuevo Presupuesto');
+    $('#form-presupuesto')[0].reset();
+    $('#pr-id').val('');
+    $('#pr-anio').val(new Date().getFullYear());
+    modalPr.show();
+}
+
+function guardarPresupuesto() {
+    const id = $('#pr-id').val();
+    const area = $('#pr-area').val();
+    const anio = $('#pr-anio').val();
+    const mes = $('#pr-mes').val();
+    const monto = $('#pr-monto').val();
+
+    if (!area) { Utils.showError('Selecciona un área.'); return; }
+    if (!anio || anio < 2020) { Utils.showError('Ingresa un año válido.'); return; }
+    if (!mes) { Utils.showError('Selecciona un mes.'); return; }
+    if (!monto || parseFloat(monto) < 0) { Utils.showError('Ingresa un monto válido.'); return; }
+
+    const data = {
+        area_id: area,
+        anio: parseInt(anio),
+        mes: parseInt(mes),
+        monto_asignado: parseFloat(monto),
+    };
+
+    Utils.setLoading('#btn-guardar-presupuesto', true, 'Guardando...');
+    const promise = id
+        ? API.put('/admin/presupuestos/' + id, data)
+        : API.post('/admin/presupuestos', data);
+
+    promise.then(function () {
+        Utils.showSuccess(id ? 'Presupuesto actualizado' : 'Presupuesto creado');
+        modalPr.hide();
+        loadPresupuestos();
+    }).catch(function (err) {
+        Utils.showError(err.message || 'Error al guardar presupuesto');
+    }).finally(function () {
+        Utils.setLoading('#btn-guardar-presupuesto', false);
+    });
+}
+</script>
+</body>
+</html>

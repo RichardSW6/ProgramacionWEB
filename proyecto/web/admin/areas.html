@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Gestión de Áreas</title>
+    <meta name="description" content="Administración de áreas de la empresa">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div><div class="brand-name">GastosEmp</div><div class="brand-sub">Sistema de Gastos</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item"><a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#sg" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sg">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="../gastos/nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#sa" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="sa">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link active" href="areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#sr" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sr">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Gestión de Áreas</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item active">Áreas</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <button class="btn btn-primary btn-sm" id="btn-nueva-area">
+                    <i class="bi bi-plus-lg"></i> Nueva Área
+                </button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Código CC</th>
+                                <th>Nombre del Área</th>
+                                <th>Jefe de Área</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="areas-tbody">
+                            <tr><td colspan="4"><div class="loading-spinner"><div class="spinner-border"></div><span>Cargando...</span></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Área -->
+<div class="modal fade" id="modal-area" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-area-title">Nueva Área</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-area" novalidate>
+                    <input type="hidden" id="a-id">
+                    <div class="mb-3">
+                        <label class="form-label">Código Centro de Costo <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="a-codigo" required placeholder="Ej: CC001">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Área <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="a-nombre" required placeholder="Nombre del área">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jefe de Área</label>
+                        <select class="form-select" id="a-jefe">
+                            <option value="">Sin asignar</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-area">
+                    <i class="bi bi-floppy me-1"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+const modalA = new bootstrap.Modal(document.getElementById('modal-area'));
+
+$(function () {
+    Auth.check();
+    Auth.requireRole([1]);
+    Auth.loadUserUI();
+
+    loadJefes();
+    loadAreas();
+
+    $('#btn-nueva-area').on('click', function () {
+        $('#modal-area-title').text('Nueva Área');
+        $('#form-area')[0].reset();
+        $('#a-id').val('');
+        modalA.show();
+    });
+
+    $('#btn-guardar-area').on('click', guardarArea);
+});
+
+function loadJefes() {
+    API.get('/admin/usuarios?rol_id=3').then(function (res) {
+        const users = res.data || res.usuarios || [];
+        users.forEach(function (u) {
+            $('#a-jefe').append(`<option value="${u.id}">${u.nombre} ${u.apellido || ''}</option>`);
+        });
+    }).catch(function () {});
+}
+
+function loadAreas() {
+    $('#areas-tbody').html('<tr><td colspan="4"><div class="loading-spinner"><div class="spinner-border"></div><span>Cargando...</span></div></td></tr>');
+    API.get('/admin/areas')
+        .then(function (res) {
+            const areas = res.data || res.areas || [];
+            if (!areas.length) {
+                $('#areas-tbody').html('<tr><td colspan="4"><div class="empty-state py-4"><div class="empty-icon"><i class="bi bi-diagram-3"></i></div><p>No hay áreas registradas</p></div></td></tr>');
+                return;
+            }
+            let html = '';
+            areas.forEach(function (a) {
+                html += `<tr>
+                    <td><span class="badge" style="background:var(--accent-light);color:var(--accent);font-family:monospace;">${a.codigo_cc || a.codigo || '—'}</span></td>
+                    <td style="color:var(--text-primary);font-weight:600;">${a.nombre}</td>
+                    <td>${a.jefe_nombre || a.jefe || '—'}</td>
+                    <td style="white-space:nowrap;">
+                        <button class="btn btn-sm btn-outline-primary btn-icon btn-edit-area" data-id="${a.id}" title="Editar"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger btn-icon btn-delete-area" data-id="${a.id}" data-nombre="${a.nombre}" title="Eliminar"><i class="bi bi-trash3"></i></button>
+                    </td>
+                </tr>`;
+            });
+            $('#areas-tbody').html(html);
+
+            $(document).off('click', '.btn-edit-area').on('click', '.btn-edit-area', function () {
+                const id = $(this).data('id');
+                API.get('/admin/areas/' + id).then(function (res) {
+                    const a = res.data || res;
+                    $('#modal-area-title').text('Editar Área');
+                    $('#a-id').val(a.id);
+                    $('#a-codigo').val(a.codigo_cc || a.codigo || '');
+                    $('#a-nombre').val(a.nombre);
+                    $('#a-jefe').val(a.jefe_id || '');
+                    modalA.show();
+                }).catch(function (err) { Utils.showError(err.message); });
+            });
+
+            $(document).off('click', '.btn-delete-area').on('click', '.btn-delete-area', function () {
+                const id = $(this).data('id');
+                const nombre = $(this).data('nombre');
+                Utils.confirm(`¿Eliminar el área "${nombre}"?`, function () {
+                    API.delete('/admin/areas/' + id)
+                        .then(function () { Utils.showSuccess('Área eliminada'); loadAreas(); })
+                        .catch(function (err) { Utils.showError(err.message); });
+                }, { title: 'Eliminar Área', confirmText: 'Eliminar', icon: 'warning' });
+            });
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al cargar áreas');
+        });
+}
+
+function guardarArea() {
+    const id = $('#a-id').val();
+    const data = {
+        codigo_cc: $('#a-codigo').val().trim(),
+        nombre: $('#a-nombre').val().trim(),
+        jefe_id: $('#a-jefe').val() || null,
+    };
+
+    if (!data.nombre) { Utils.showError('El nombre del área es requerido.'); return; }
+
+    Utils.setLoading('#btn-guardar-area', true, 'Guardando...');
+    const promise = id ? API.put('/admin/areas/' + id, data) : API.post('/admin/areas', data);
+
+    promise.then(function () {
+        Utils.showSuccess(id ? 'Área actualizada' : 'Área creada');
+        modalA.hide();
+        loadAreas();
+    }).catch(function (err) {
+        Utils.showError(err.message || 'Error al guardar');
+    }).finally(function () {
+        Utils.setLoading('#btn-guardar-area', false);
+    });
+}
+</script>
+</body>
+</html>

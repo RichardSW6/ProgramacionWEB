@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Nuevo Gasto</title>
+    <meta name="description" content="Registrar nuevo gasto empresarial mediante CFDI XML">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div>
+                <div class="brand-name">GastosEmp</div>
+                <div class="brand-sub">Sistema de Gastos</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item">
+                <a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+            </div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#submenu-gastos" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="submenu-gastos">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link active" href="nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#submenu-admin" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-admin">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../admin/usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="../admin/areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="../admin/proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="../admin/presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="../admin/bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#submenu-reportes" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-reportes">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title" id="page-title">Nuevo Gasto</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="lista.html">Gastos</a></li>
+                        <li class="breadcrumb-item active" id="breadcrumb-current">Nuevo</li>
+                    </ol>
+                </nav>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- SECTION 1: XML Upload -->
+            <div class="card mb-4" id="xml-section">
+                <div class="card-header">
+                    <h5><i class="bi bi-file-earmark-code me-2 text-accent"></i>Paso 1 — Cargar CFDI (XML)</h5>
+                    <span class="badge" style="background:var(--accent-light); color:var(--accent);">Requerido</span>
+                </div>
+                <div class="card-body">
+                    <div class="upload-zone" id="upload-zone">
+                        <input type="file" id="xml-input" accept=".xml" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;">
+                        <div class="upload-icon"><i class="bi bi-cloud-upload"></i></div>
+                        <h5>Arrastra tu CFDI aquí o haz click para seleccionar</h5>
+                        <p>Formato aceptado: <strong>.XML</strong> — Comprobante Fiscal Digital por Internet</p>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="$('#xml-input').click()">
+                            <i class="bi bi-folder2-open me-1"></i> Seleccionar archivo
+                        </button>
+                    </div>
+
+                    <!-- XML Preview -->
+                    <div id="xml-preview" style="display:none;">
+                        <div class="xml-preview">
+                            <div class="xml-preview-header">
+                                <i class="bi bi-check-circle-fill" style="color:var(--success);"></i>
+                                <div>
+                                    <div style="font-weight:600; color:var(--text-primary);">CFDI cargado correctamente</div>
+                                    <div class="small text-muted-custom" id="xml-filename"></div>
+                                </div>
+                                <button type="button" class="btn btn-secondary btn-sm ms-auto" id="btn-change-xml">
+                                    <i class="bi bi-arrow-repeat"></i> Cambiar
+                                </button>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <h6 class="section-title">Datos Fiscales</h6>
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <div class="detail-row">
+                                                <span class="label">UUID / Folio Fiscal</span>
+                                                <span class="value font-monospace small" id="prev-uuid">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="detail-row">
+                                                <span class="label">RFC Emisor</span>
+                                                <span class="value" id="prev-rfc-emisor">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="detail-row">
+                                                <span class="label">RFC Receptor</span>
+                                                <span class="value" id="prev-rfc-receptor">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="detail-row">
+                                                <span class="label">Nombre Emisor</span>
+                                                <span class="value" id="prev-nombre-emisor">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="detail-row">
+                                                <span class="label">Fecha Emisión</span>
+                                                <span class="value" id="prev-fecha">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="section-title">Importes</h6>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="detail-row">
+                                                <span class="label">Subtotal</span>
+                                                <span class="value text-accent" id="prev-subtotal">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="detail-row">
+                                                <span class="label">IVA</span>
+                                                <span class="value" id="prev-iva">—</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="detail-row">
+                                                <span class="label">Total</span>
+                                                <span class="value" style="font-size:1.2rem; font-weight:700; color:var(--success);" id="prev-total">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Conceptos del CFDI -->
+                            <div id="conceptos-xml-wrap" class="mt-3" style="display:none;">
+                                <h6 class="section-title">Conceptos del CFDI</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Descripción</th>
+                                                <th>Cantidad</th>
+                                                <th>Valor Unitario</th>
+                                                <th>Importe</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="conceptos-xml-tbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Datos del gasto -->
+            <div class="card" id="form-section" style="display:none;">
+                <div class="card-header">
+                    <h5><i class="bi bi-pencil-square me-2 text-accent"></i>Paso 2 — Datos del Gasto</h5>
+                </div>
+                <div class="card-body">
+                    <form id="gasto-form" novalidate>
+                        <!-- Hidden fields from XML -->
+                        <input type="hidden" id="f-uuid">
+                        <input type="hidden" id="f-rfc-emisor">
+                        <input type="hidden" id="f-rfc-receptor">
+                        <input type="hidden" id="f-subtotal">
+                        <input type="hidden" id="f-iva">
+                        <input type="hidden" id="f-total">
+                        <input type="hidden" id="f-fecha-emision">
+                        <input type="hidden" id="f-xml-content">
+                        <input type="hidden" id="f-gasto-id">
+
+                        <div class="row g-3">
+                            <!-- Área -->
+                            <div class="col-md-6">
+                                <label class="form-label">Área <span class="text-danger">*</span></label>
+                                <select class="form-select" id="f-area" required>
+                                    <option value="">Seleccionar área...</option>
+                                </select>
+                            </div>
+
+                            <!-- Proveedor -->
+                            <div class="col-md-6">
+                                <label class="form-label">Proveedor <span class="text-danger">*</span></label>
+                                <select class="form-select" id="f-proveedor" required>
+                                    <option value="">Seleccionar proveedor...</option>
+                                </select>
+                            </div>
+
+                            <!-- Concepto -->
+                            <div class="col-12">
+                                <label class="form-label">Concepto / Descripción <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="f-concepto" rows="2" required
+                                          placeholder="Descripción del gasto..."></textarea>
+                            </div>
+
+                            <!-- Categoría -->
+                            <div class="col-md-6">
+                                <label class="form-label">Categoría</label>
+                                <select class="form-select" id="f-categoria">
+                                    <option value="">Sin categoría</option>
+                                </select>
+                            </div>
+
+                            <!-- Cuenta contable -->
+                            <div class="col-md-6">
+                                <label class="form-label">Cuenta Contable</label>
+                                <select class="form-select" id="f-cuenta">
+                                    <option value="">Sin cuenta</option>
+                                </select>
+                            </div>
+
+                            <!-- Datos fiscales (readonly) -->
+                            <div class="col-12">
+                                <div class="divider"></div>
+                                <h6 class="section-title">Datos Fiscales (del XML)</h6>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">UUID / Folio Fiscal</label>
+                                <input type="text" class="form-control font-monospace" id="show-uuid" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">RFC Emisor</label>
+                                <input type="text" class="form-control" id="show-rfc-emisor" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">RFC Receptor</label>
+                                <input type="text" class="form-control" id="show-rfc-receptor" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha Emisión</label>
+                                <input type="text" class="form-control" id="show-fecha" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Subtotal</label>
+                                <input type="text" class="form-control" id="show-subtotal" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">IVA</label>
+                                <input type="text" class="form-control" id="show-iva" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Total</label>
+                                <input type="text" class="form-control" id="show-total" readonly
+                                       style="font-weight:700; color:var(--success);">
+                            </div>
+                        </div>
+
+                        <!-- Action buttons -->
+                        <div class="divider"></div>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="lista.html" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-secondary" id="btn-borrador">
+                                <i class="bi bi-floppy me-1"></i> Guardar como Borrador
+                            </button>
+                            <button type="button" class="btn btn-primary" id="btn-enviar">
+                                <i class="bi bi-send me-1"></i> Guardar y Enviar a Aprobación
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+let xmlFile = null;
+let xmlData = {};
+let editId = null;
+
+$(function () {
+    Auth.check();
+    if (!Auth.hasRole(1, 2)) {
+        window.location.href = 'lista.html';
+        return;
+    }
+    Auth.loadUserUI();
+
+    editId = Utils.getQueryParam('id');
+    if (editId) {
+        $('#page-title').text('Editar Gasto');
+        $('#breadcrumb-current').text('Editar');
+        loadGastoForEdit(editId);
+    }
+
+    loadCatalogos();
+    setupUploadZone();
+
+    // Cambiar archivo
+    $('#btn-change-xml').on('click', function () {
+        resetXml();
+    });
+
+    // Form submit → borrador
+    $('#gasto-form').on('submit', function (e) {
+        e.preventDefault();
+        saveGasto('borrador');
+    });
+
+    // Enviar a aprobación
+    $('#btn-enviar').on('click', function () {
+        saveGasto('enviar');
+    });
+});
+
+function resetXml() {
+    xmlFile = null;
+    xmlData = {};
+    $('#xml-preview').hide();
+    $('#upload-zone').show();
+    $('#form-section').hide();
+    $('#xml-input').val('');
+}
+
+function setupUploadZone() {
+    const zone = document.getElementById('upload-zone');
+    const input = document.getElementById('xml-input');
+
+    zone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', function () {
+        zone.classList.remove('drag-over');
+    });
+    zone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) handleFile(files[0]);
+    });
+
+    input.addEventListener('change', function () {
+        if (this.files.length > 0) handleFile(this.files[0]);
+    });
+}
+
+function handleFile(file) {
+    if (!file.name.toLowerCase().endsWith('.xml')) {
+        Utils.showError('Solo se aceptan archivos XML (CFDI).');
+        return;
+    }
+    xmlFile = file;
+    $('#xml-filename').text(file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)');
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const content = e.target.result;
+        $('#f-xml-content').val(content);
+        parseXML(content);
+    };
+    reader.readAsText(file);
+}
+
+function parseXML(xmlString) {
+    try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(xmlString, 'text/xml');
+
+        const ns = 'http://www.sat.gob.mx/cfd/4';
+        const nsOld = 'http://www.sat.gob.mx/cfd/3';
+
+        // Try both v3 and v4
+        let comp = doc.getElementsByTagNameNS(ns, 'Comprobante')[0] ||
+                   doc.getElementsByTagNameNS(nsOld, 'Comprobante')[0] ||
+                   doc.getElementsByTagName('cfdi:Comprobante')[0] ||
+                   doc.documentElement;
+
+        if (!comp) {
+            Utils.showError('No se pudo leer el XML. Verifica que sea un CFDI válido.');
+            return;
+        }
+
+        const getAttr = (el, name) => el ? (el.getAttribute(name) || '') : '';
+
+        let emisor = doc.getElementsByTagNameNS(ns, 'Emisor')[0] ||
+                     doc.getElementsByTagNameNS(nsOld, 'Emisor')[0] ||
+                     doc.getElementsByTagName('cfdi:Emisor')[0];
+        let receptor = doc.getElementsByTagNameNS(ns, 'Receptor')[0] ||
+                       doc.getElementsByTagNameNS(nsOld, 'Receptor')[0] ||
+                       doc.getElementsByTagName('cfdi:Receptor')[0];
+        let timbre = doc.getElementsByTagNameNS('http://www.sat.gob.mx/TimbreFiscalDigital', 'TimbreFiscalDigital')[0] ||
+                     doc.getElementsByTagName('tfd:TimbreFiscalDigital')[0];
+
+        // Get impuesto IVA total
+        let ivaTotal = 0;
+        const impTotal = doc.getElementsByTagNameNS(ns, 'Traslado') ||
+                         doc.getElementsByTagNameNS(nsOld, 'Traslado') ||
+                         doc.getElementsByTagName('cfdi:Traslado');
+        for (let t of impTotal) {
+            const imp = t.getAttribute('Impuesto') || t.getAttribute('impuesto') || '';
+            if (imp === '002' || imp === 'IVA') {
+                ivaTotal += parseFloat(t.getAttribute('Importe') || t.getAttribute('importe') || 0);
+            }
+        }
+
+        xmlData = {
+            uuid: getAttr(timbre, 'UUID') || getAttr(timbre, 'uuid') || '',
+            rfcEmisor: getAttr(emisor, 'Rfc') || getAttr(emisor, 'RFC') || '',
+            nombreEmisor: getAttr(emisor, 'Nombre') || getAttr(emisor, 'nombre') || '',
+            rfcReceptor: getAttr(receptor, 'Rfc') || getAttr(receptor, 'RFC') || '',
+            subtotal: parseFloat(getAttr(comp, 'SubTotal') || getAttr(comp, 'Subtotal') || 0),
+            total: parseFloat(getAttr(comp, 'Total') || 0),
+            fecha: getAttr(comp, 'Fecha') || '',
+            iva: ivaTotal,
+        };
+
+        // Conceptos
+        const conceptos = [];
+        const cNodes = doc.getElementsByTagNameNS(ns, 'Concepto').length ?
+            doc.getElementsByTagNameNS(ns, 'Concepto') :
+            doc.getElementsByTagNameNS(nsOld, 'Concepto').length ?
+            doc.getElementsByTagNameNS(nsOld, 'Concepto') :
+            doc.getElementsByTagName('cfdi:Concepto');
+
+        for (let c of cNodes) {
+            conceptos.push({
+                descripcion: c.getAttribute('Descripcion') || c.getAttribute('descripcion') || '',
+                cantidad: c.getAttribute('Cantidad') || c.getAttribute('cantidad') || '',
+                valorUnitario: parseFloat(c.getAttribute('ValorUnitario') || c.getAttribute('valorUnitario') || 0),
+                importe: parseFloat(c.getAttribute('Importe') || c.getAttribute('importe') || 0),
+            });
+        }
+        xmlData.conceptos = conceptos;
+
+        fillPreview();
+        fillForm();
+        showFormSection();
+    } catch (ex) {
+        Utils.showError('Error al procesar el XML: ' + ex.message);
+    }
+}
+
+function fillPreview() {
+    $('#prev-uuid').text(xmlData.uuid || '—');
+    $('#prev-rfc-emisor').text(xmlData.rfcEmisor || '—');
+    $('#prev-rfc-receptor').text(xmlData.rfcReceptor || '—');
+    $('#prev-nombre-emisor').text(xmlData.nombreEmisor || '—');
+    $('#prev-fecha').text(Utils.formatDateTime(xmlData.fecha));
+    $('#prev-subtotal').text(Utils.formatMoney(xmlData.subtotal));
+    $('#prev-iva').text(Utils.formatMoney(xmlData.iva));
+    $('#prev-total').text(Utils.formatMoney(xmlData.total));
+
+    // Conceptos
+    if (xmlData.conceptos && xmlData.conceptos.length > 0) {
+        let html = '';
+        xmlData.conceptos.forEach(function (c) {
+            html += `<tr>
+                <td>${c.descripcion}</td>
+                <td>${c.cantidad}</td>
+                <td>${Utils.formatMoney(c.valorUnitario)}</td>
+                <td style="color:var(--accent);">${Utils.formatMoney(c.importe)}</td>
+            </tr>`;
+        });
+        $('#conceptos-xml-tbody').html(html);
+        $('#conceptos-xml-wrap').show();
+    }
+
+    $('#upload-zone').hide();
+    $('#xml-preview').show();
+}
+
+function fillForm() {
+    // Hidden fields
+    $('#f-uuid').val(xmlData.uuid);
+    $('#f-rfc-emisor').val(xmlData.rfcEmisor);
+    $('#f-rfc-receptor').val(xmlData.rfcReceptor);
+    $('#f-subtotal').val(xmlData.subtotal);
+    $('#f-iva').val(xmlData.iva);
+    $('#f-total').val(xmlData.total);
+    $('#f-fecha-emision').val(xmlData.fecha);
+
+    // Readonly display
+    $('#show-uuid').val(xmlData.uuid);
+    $('#show-rfc-emisor').val(xmlData.rfcEmisor);
+    $('#show-rfc-receptor').val(xmlData.rfcReceptor);
+    $('#show-fecha').val(Utils.formatDateTime(xmlData.fecha));
+    $('#show-subtotal').val(Utils.formatMoney(xmlData.subtotal));
+    $('#show-iva').val(Utils.formatMoney(xmlData.iva));
+    $('#show-total').val(Utils.formatMoney(xmlData.total));
+
+    // Pre-fill concepto with first concepto del CFDI
+    if (xmlData.conceptos && xmlData.conceptos.length > 0 && !$('#f-concepto').val()) {
+        $('#f-concepto').val(xmlData.conceptos[0].descripcion);
+    }
+
+    // Pre-select proveedor by RFC
+    if (xmlData.rfcEmisor) {
+        $('#f-proveedor option').each(function () {
+            if ($(this).data('rfc') === xmlData.rfcEmisor) {
+                $('#f-proveedor').val($(this).val());
+                return false;
+            }
+        });
+    }
+}
+
+function showFormSection() {
+    $('#form-section').show();
+    $('html, body').animate({ scrollTop: $('#form-section').offset().top - 80 }, 400);
+}
+
+function loadCatalogos() {
+    // Load areas
+    API.get('/admin/areas').then(function (res) {
+        const areas = res.data || res.areas || [];
+        areas.forEach(function (a) {
+            $('#f-area').append(`<option value="${a.id}">${a.nombre}</option>`);
+        });
+    }).catch(function () {});
+
+    // Load proveedores
+    API.get('/admin/proveedores').then(function (res) {
+        const provs = res.data || res.proveedores || [];
+        provs.forEach(function (p) {
+            $('#f-proveedor').append(`<option value="${p.id}" data-rfc="${p.rfc}">${p.rfc} — ${p.nombre}</option>`);
+        });
+    }).catch(function () {});
+
+    // Load categorias
+    API.get('/catalogos/categorias').then(function (res) {
+        const cats = res.data || res.categorias || [];
+        cats.forEach(function (c) {
+            $('#f-categoria').append(`<option value="${c.id}">${c.nombre}</option>`);
+        });
+    }).catch(function () {});
+
+    // Load cuentas
+    API.get('/catalogos/cuentas').then(function (res) {
+        const ctas = res.data || res.cuentas || [];
+        ctas.forEach(function (c) {
+            $('#f-cuenta').append(`<option value="${c.id}">${c.codigo} — ${c.nombre}</option>`);
+        });
+    }).catch(function () {});
+}
+
+function loadGastoForEdit(id) {
+    API.get('/gastos/' + id).then(function (res) {
+        const g = res.data || res;
+
+        // Fill XML preview with existing data
+        xmlData = {
+            uuid: g.uuid || '',
+            rfcEmisor: g.rfc_emisor || '',
+            rfcReceptor: g.rfc_receptor || '',
+            nombreEmisor: g.nombre_emisor || '',
+            subtotal: g.subtotal || 0,
+            iva: g.iva || 0,
+            total: g.total || 0,
+            fecha: g.fecha_emision || '',
+            conceptos: g.conceptos || [],
+        };
+
+        fillPreview();
+        fillForm();
+
+        // Pre-fill form fields
+        setTimeout(function () {
+            $('#f-area').val(g.area_id || '');
+            $('#f-proveedor').val(g.proveedor_id || '');
+            $('#f-concepto').val(g.concepto || '');
+            $('#f-categoria').val(g.categoria_id || '');
+            $('#f-cuenta').val(g.cuenta_id || '');
+            $('#f-gasto-id').val(id);
+        }, 500);
+
+        showFormSection();
+    }).catch(function (err) {
+        Utils.showError(err.message || 'Error al cargar el gasto');
+    });
+}
+
+function buildFormData(mode) {
+    const fd = new FormData();
+
+    // Validate required
+    const area = $('#f-area').val();
+    const proveedor = $('#f-proveedor').val();
+    const concepto = $('#f-concepto').val().trim();
+
+    if (!area) { Utils.showError('Selecciona un área.'); return null; }
+    if (!proveedor) { Utils.showError('Selecciona un proveedor.'); return null; }
+    if (!concepto) { Utils.showError('Ingresa el concepto del gasto.'); return null; }
+
+    fd.append('area_id', area);
+    fd.append('proveedor_id', proveedor);
+    fd.append('concepto', concepto);
+    fd.append('categoria_id', $('#f-categoria').val() || '');
+    fd.append('cuenta_id', $('#f-cuenta').val() || '');
+    fd.append('uuid', $('#f-uuid').val());
+    fd.append('rfc_emisor', $('#f-rfc-emisor').val());
+    fd.append('rfc_receptor', $('#f-rfc-receptor').val());
+    fd.append('subtotal', $('#f-subtotal').val());
+    fd.append('iva', $('#f-iva').val());
+    fd.append('total', $('#f-total').val());
+    fd.append('fecha_emision', $('#f-fecha-emision').val());
+
+    if (xmlFile) {
+        fd.append('xml', xmlFile);
+    }
+
+    return fd;
+}
+
+function saveGasto(mode) {
+    const fd = buildFormData(mode);
+    if (!fd) return;
+
+    const $btnBorrador = $('#btn-borrador');
+    const $btnEnviar = $('#btn-enviar');
+    const isSend = mode === 'enviar';
+
+    Utils.setLoading(isSend ? $btnEnviar : $btnBorrador, true, 'Guardando...');
+    $btnBorrador.prop('disabled', true);
+    $btnEnviar.prop('disabled', true);
+
+    const gId = $('#f-gasto-id').val();
+    let promise;
+
+    if (gId) {
+        promise = API.putUpload('/gastos/' + gId, fd);
+    } else {
+        promise = API.upload('/gastos', fd);
+    }
+
+    promise
+        .then(function (res) {
+            const newId = (res.data && res.data.id) || res.id || gId;
+
+            if (isSend && newId) {
+                // Enviar a aprobación
+                return API.post('/gastos/' + newId + '/enviar', {}).then(function () {
+                    Utils.showSuccess('Gasto enviado a aprobación exitosamente');
+                    setTimeout(() => window.location.href = 'lista.html', 1200);
+                });
+            } else {
+                Utils.showSuccess('Gasto guardado como borrador');
+                setTimeout(() => window.location.href = 'lista.html', 1200);
+            }
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al guardar el gasto');
+        })
+        .finally(function () {
+            Utils.setLoading($btnBorrador, false);
+            Utils.setLoading($btnEnviar, false);
+        });
+}
+</script>
+</body>
+</html>

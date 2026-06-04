@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Gestión de Proveedores</title>
+    <meta name="description" content="Administración de proveedores del sistema">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="../assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div><div class="brand-name">GastosEmp</div><div class="brand-sub">Sistema de Gastos</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item"><a class="nav-link" href="../dashboard.html"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></div>
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#sg" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i><span>Gastos</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sg">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="../gastos/nuevo.html"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#sa" data-bs-toggle="collapse" aria-expanded="true">
+                    <i class="bi bi-shield-lock"></i><span>Administración</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse show" id="sa">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link active" href="proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#sr" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i><span>Reportes</span><i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="sr">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="../reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="../reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Gestión de Proveedores</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../dashboard.html">Inicio</a></li>
+                        <li class="breadcrumb-item active">Proveedores</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <button class="btn btn-primary btn-sm" id="btn-nuevo-proveedor">
+                    <i class="bi bi-plus-lg"></i> Nuevo Proveedor
+                </button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Filters -->
+            <div class="filters-bar">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label">Buscar por RFC o nombre</label>
+                        <input type="text" class="form-control form-control-sm" id="f-busqueda"
+                               placeholder="Ingresa RFC o nombre del proveedor...">
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button class="btn btn-primary btn-sm flex-grow-1" id="btn-buscar">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <button class="btn btn-secondary btn-sm" id="btn-limpiar">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="text-muted-custom small" id="total-info"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>RFC</th>
+                                <th>Nombre / Razón Social</th>
+                                <th>Gastos Registrados</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proveedores-tbody">
+                            <tr><td colspan="5">
+                                <div class="loading-spinner">
+                                    <div class="spinner-border" role="status"></div>
+                                    <span>Cargando proveedores...</span>
+                                </div>
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination-wrapper">
+                    <div class="pagination-info" id="pagination-info"></div>
+                    <div id="pagination-controls"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Proveedor -->
+<div class="modal fade" id="modal-proveedor" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-proveedor-title">
+                    <i class="bi bi-truck me-2 text-accent"></i>Nuevo Proveedor
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-proveedor" novalidate>
+                    <input type="hidden" id="p-id">
+                    <div class="mb-3">
+                        <label class="form-label">RFC <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control text-uppercase" id="p-rfc" required
+                               maxlength="13" placeholder="Ej: XAXX010101000"
+                               style="letter-spacing: 0.08em; font-family: monospace;">
+                        <div class="form-text">RFC persona moral: 12 caracteres. Persona física: 13 caracteres.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre / Razón Social <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="p-nombre" required
+                               placeholder="Nombre completo o razón social">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-proveedor">
+                    <i class="bi bi-floppy me-1"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+let currentPage = 1;
+const modalP = new bootstrap.Modal(document.getElementById('modal-proveedor'));
+
+$(function () {
+    Auth.check();
+    Auth.requireRole([1]);
+    Auth.loadUserUI();
+
+    loadProveedores();
+
+    $('#btn-nuevo-proveedor').on('click', function () {
+        openModalCreate();
+    });
+
+    $('#btn-buscar').on('click', function () { currentPage = 1; loadProveedores(); });
+    $('#btn-limpiar').on('click', function () { $('#f-busqueda').val(''); currentPage = 1; loadProveedores(); });
+    $('#f-busqueda').on('keydown', function (e) { if (e.key === 'Enter') { currentPage = 1; loadProveedores(); } });
+
+    $('#btn-guardar-proveedor').on('click', guardarProveedor);
+
+    // Auto-uppercase RFC
+    $('#p-rfc').on('input', function () {
+        const pos = this.selectionStart;
+        this.value = this.value.toUpperCase();
+        this.setSelectionRange(pos, pos);
+    });
+
+    $(document).on('click', '#pagination-controls .page-link', function (e) {
+        e.preventDefault();
+        const page = parseInt($(this).data('page'));
+        if (page && page !== currentPage) { currentPage = page; loadProveedores(); }
+    });
+});
+
+function buildParams() {
+    const p = { page: currentPage, per_page: 20 };
+    const busq = $('#f-busqueda').val().trim();
+    if (busq) p.busqueda = busq;
+    return '?' + $.param(p);
+}
+
+function loadProveedores() {
+    $('#proveedores-tbody').html('<tr><td colspan="5"><div class="loading-spinner"><div class="spinner-border"></div><span>Cargando...</span></div></td></tr>');
+
+    API.get('/admin/proveedores' + buildParams())
+        .then(function (res) {
+            const proveedores = res.data || res.proveedores || [];
+            const meta = res.meta || {};
+            const totalPages = meta.last_page || 1;
+            const total = meta.total || proveedores.length;
+
+            $('#pagination-info').text(`Mostrando ${proveedores.length} de ${total} proveedores`);
+            $('#total-info').text(`${total} proveedor${total !== 1 ? 'es' : ''} encontrado${total !== 1 ? 's' : ''}`);
+            $('#pagination-controls').html(Utils.paginationHTML(currentPage, totalPages));
+
+            renderProveedores(proveedores);
+        })
+        .catch(function (err) {
+            Utils.showError(err.message || 'Error al cargar proveedores');
+            $('#proveedores-tbody').html('<tr><td colspan="5"><div class="empty-state py-3"><p>Error al cargar datos</p></div></td></tr>');
+        });
+}
+
+function renderProveedores(proveedores) {
+    const $tbody = $('#proveedores-tbody');
+    if (!proveedores.length) {
+        $tbody.html(`<tr><td colspan="5">
+            <div class="empty-state py-4">
+                <div class="empty-icon"><i class="bi bi-truck"></i></div>
+                <h5>Sin proveedores</h5>
+                <p>No se encontraron proveedores con los filtros aplicados</p>
+                <button class="btn btn-primary btn-sm" onclick="$('#btn-nuevo-proveedor').click()">
+                    <i class="bi bi-plus"></i> Agregar proveedor
+                </button>
+            </div>
+        </td></tr>`);
+        return;
+    }
+
+    let html = '';
+    proveedores.forEach(function (p, i) {
+        const gastos = p.total_gastos !== undefined ? p.total_gastos : '—';
+        html += `<tr>
+            <td class="text-muted-custom">${((currentPage - 1) * 20) + i + 1}</td>
+            <td>
+                <span style="font-family:monospace; font-weight:600; color:var(--accent); letter-spacing:0.05em;">
+                    ${p.rfc || '—'}
+                </span>
+            </td>
+            <td style="color:var(--text-primary); font-weight:500;">${p.nombre || '—'}</td>
+            <td>
+                ${gastos !== '—'
+                    ? `<span class="badge" style="background:var(--accent-light);color:var(--accent);">${gastos} gasto${gastos !== 1 ? 's' : ''}</span>`
+                    : '<span class="text-muted-custom">—</span>'
+                }
+            </td>
+            <td style="white-space:nowrap;">
+                <button class="btn btn-sm btn-outline-primary btn-icon btn-edit-prov"
+                        data-id="${p.id}" title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn-icon btn-delete-prov"
+                        data-id="${p.id}" data-nombre="${p.nombre}" data-rfc="${p.rfc}" title="Eliminar">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </td>
+        </tr>`;
+    });
+    $tbody.html(html);
+
+    // Edit
+    $(document).off('click', '.btn-edit-prov').on('click', '.btn-edit-prov', function () {
+        const id = $(this).data('id');
+        API.get('/admin/proveedores/' + id).then(function (res) {
+            const p = res.data || res;
+            $('#modal-proveedor-title').html('<i class="bi bi-truck me-2 text-accent"></i>Editar Proveedor');
+            $('#p-id').val(p.id);
+            $('#p-rfc').val(p.rfc);
+            $('#p-nombre').val(p.nombre);
+            modalP.show();
+        }).catch(function (err) { Utils.showError(err.message); });
+    });
+
+    // Delete
+    $(document).off('click', '.btn-delete-prov').on('click', '.btn-delete-prov', function () {
+        const id = $(this).data('id');
+        const nombre = $(this).data('nombre');
+        const rfc = $(this).data('rfc');
+        Utils.confirm(
+            `¿Eliminar el proveedor "${nombre}" (RFC: ${rfc})?`,
+            function () {
+                API.delete('/admin/proveedores/' + id)
+                    .then(function () { Utils.showSuccess('Proveedor eliminado'); loadProveedores(); })
+                    .catch(function (err) { Utils.showError(err.message || 'No se puede eliminar, tiene gastos asociados'); });
+            },
+            { title: 'Eliminar Proveedor', confirmText: 'Sí, eliminar', icon: 'warning' }
+        );
+    });
+}
+
+function openModalCreate() {
+    $('#modal-proveedor-title').html('<i class="bi bi-truck me-2 text-accent"></i>Nuevo Proveedor');
+    $('#form-proveedor')[0].reset();
+    $('#p-id').val('');
+    modalP.show();
+}
+
+function guardarProveedor() {
+    const id = $('#p-id').val();
+    const rfc = $('#p-rfc').val().trim().toUpperCase();
+    const nombre = $('#p-nombre').val().trim();
+
+    if (!rfc) { Utils.showError('El RFC es requerido.'); return; }
+    if (rfc.length < 12 || rfc.length > 13) { Utils.showError('El RFC debe tener 12 o 13 caracteres.'); return; }
+    if (!nombre) { Utils.showError('El nombre es requerido.'); return; }
+
+    const data = { rfc, nombre };
+
+    Utils.setLoading('#btn-guardar-proveedor', true, 'Guardando...');
+    const promise = id
+        ? API.put('/admin/proveedores/' + id, data)
+        : API.post('/admin/proveedores', data);
+
+    promise.then(function () {
+        Utils.showSuccess(id ? 'Proveedor actualizado' : 'Proveedor creado exitosamente');
+        modalP.hide();
+        loadProveedores();
+    }).catch(function (err) {
+        Utils.showError(err.message || 'Error al guardar proveedor');
+    }).finally(function () {
+        Utils.setLoading('#btn-guardar-proveedor', false);
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GastosEmp - Dashboard</title>
+    <meta name="description" content="Panel principal del Sistema de Gestión de Gastos Empresariales">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="assets/css/app.css" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-icon"><i class="bi bi-building-check"></i></div>
+            <div>
+                <div class="brand-name">GastosEmp</div>
+                <div class="brand-sub">Sistema de Gastos</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item">
+                <a class="nav-link active" href="dashboard.html">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section-label">Operaciones</div>
+            <div class="nav-item">
+                <a class="nav-link" href="#submenu-gastos" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-receipt"></i>
+                    <span>Gastos</span>
+                    <i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-gastos">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="gastos/lista.html"><i class="bi bi-list-ul"></i> Lista de Gastos</a>
+                        <a class="nav-link" href="gastos/nuevo.html" data-roles="1,2"><i class="bi bi-plus-circle"></i> Nuevo Gasto</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-item nav-admin">
+                <a class="nav-link" href="#submenu-admin" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Administración</span>
+                    <i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-admin">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="admin/usuarios.html"><i class="bi bi-people"></i> Usuarios</a>
+                        <a class="nav-link" href="admin/areas.html"><i class="bi bi-diagram-3"></i> Áreas</a>
+                        <a class="nav-link" href="admin/proveedores.html"><i class="bi bi-truck"></i> Proveedores</a>
+                        <a class="nav-link" href="admin/presupuestos.html"><i class="bi bi-wallet2"></i> Presupuestos</a>
+                        <a class="nav-link" href="admin/bitacora.html"><i class="bi bi-journal-text"></i> Bitácora</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-item nav-reportes">
+                <a class="nav-link" href="#submenu-reportes" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Reportes</span>
+                    <i class="bi bi-chevron-right nav-arrow"></i>
+                </a>
+                <div class="collapse" id="submenu-reportes">
+                    <div class="nav-submenu">
+                        <a class="nav-link" href="reportes/gastos-por-area.html"><i class="bi bi-pie-chart"></i> Gastos por Área</a>
+                        <a class="nav-link" href="reportes/presupuesto-vs-ejecutado.html"><i class="bi bi-graph-up"></i> Presupuesto vs Ejecutado</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">US</div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">Cargando...</div>
+                    <div class="user-role" id="user-role">-</div>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <div>
+                <h1 class="page-title">Dashboard</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item active">Inicio</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="top-bar-actions">
+                <span class="text-muted-custom small" id="current-date"></span>
+                <a href="gastos/nuevo.html" class="btn btn-primary btn-sm" id="btn-nuevo-gasto">
+                    <i class="bi bi-plus"></i> Nuevo Gasto
+                </a>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Welcome banner -->
+            <div class="card mb-4" style="background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%); border-color: rgba(59,130,246,0.2);">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="mb-1" id="welcome-msg">Bienvenido</h4>
+                        <p class="mb-0 text-secondary">Aquí tienes un resumen de la actividad reciente del sistema.</p>
+                    </div>
+                    <div class="d-none d-md-block">
+                        <i class="bi bi-building-check" style="font-size: 3rem; color: rgba(59,130,246,0.3);"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card-stat">
+                        <div class="stat-icon blue"><i class="bi bi-receipt"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-total">—</div>
+                            <div class="stat-label">Total de Gastos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card-stat">
+                        <div class="stat-icon yellow"><i class="bi bi-hourglass-split"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-pendientes">—</div>
+                            <div class="stat-label">Pendientes de Aprobación</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card-stat">
+                        <div class="stat-icon green"><i class="bi bi-check-circle"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-aprobados">—</div>
+                            <div class="stat-label">Aprobados este Mes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card-stat">
+                        <div class="stat-icon purple"><i class="bi bi-currency-dollar"></i></div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="stat-monto" style="font-size:1.2rem;">—</div>
+                            <div class="stat-label">Monto Total Aprobado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent expenses table -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-clock-history me-2 text-accent"></i>Últimos Gastos</h5>
+                    <a href="gastos/lista.html" class="btn btn-outline-primary btn-sm">
+                        Ver todos <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Folio</th>
+                                    <th>Proveedor</th>
+                                    <th>Área</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-tbody">
+                                <tr><td colspan="6">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border" role="status"></div>
+                                        <span>Cargando...</span>
+                                    </div>
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick access admin (solo rol 1) -->
+            <div id="admin-quickaccess" style="display:none;">
+                <h6 class="section-title">Acceso Rápido — Administración</h6>
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <a href="admin/usuarios.html" class="card p-3 text-center d-block text-decoration-none" style="transition: all 0.2s;">
+                            <i class="bi bi-people" style="font-size:1.8rem; color: var(--accent);"></i>
+                            <div class="mt-2 small" style="font-weight:600; color: var(--text-secondary);">Usuarios</div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="admin/areas.html" class="card p-3 text-center d-block text-decoration-none">
+                            <i class="bi bi-diagram-3" style="font-size:1.8rem; color: var(--success);"></i>
+                            <div class="mt-2 small" style="font-weight:600; color: var(--text-secondary);">Áreas</div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="admin/proveedores.html" class="card p-3 text-center d-block text-decoration-none">
+                            <i class="bi bi-truck" style="font-size:1.8rem; color: var(--warning);"></i>
+                            <div class="mt-2 small" style="font-weight:600; color: var(--text-secondary);">Proveedores</div>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="admin/bitacora.html" class="card p-3 text-center d-block text-decoration-none">
+                            <i class="bi bi-journal-text" style="font-size:1.8rem; color: var(--info);"></i>
+                            <div class="mt-2 small" style="font-weight:600; color: var(--text-secondary);">Bitácora</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script>
+$(function () {
+    Auth.check();
+    Auth.loadUserUI();
+
+    // Fecha actual
+    const now = new Date();
+    $('#current-date').text(now.toLocaleDateString('es-MX', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    }));
+
+    // Welcome message
+    const user = Auth.getUser();
+    if (user) {
+        const nombre = user.nombre || user.correo || 'Usuario';
+        $('#welcome-msg').text('Bienvenido, ' + nombre + ' 👋');
+    }
+
+    // Admin quick access
+    if (Auth.hasRole(1)) {
+        $('#admin-quickaccess').show();
+    }
+
+    // Hide nuevo gasto if not allowed
+    if (!Auth.hasRole(1, 2)) {
+        $('#btn-nuevo-gasto').hide();
+    }
+
+    loadDashboard();
+});
+
+function loadDashboard() {
+    API.get('/gastos?per_page=5&page=1')
+        .then(function (res) {
+            const gastos = res.data || res.gastos || [];
+            const meta = res.meta || {};
+
+            $('#stat-total').text(meta.total || gastos.length || 0);
+            $('#stat-pendientes').text(meta.pendientes !== undefined ? meta.pendientes : '—');
+            $('#stat-aprobados').text(meta.aprobados_mes !== undefined ? meta.aprobados_mes : '—');
+            $('#stat-monto').text(meta.monto_total ? Utils.formatMoney(meta.monto_total) : '$0.00 MXN');
+
+            renderRecentTable(gastos);
+        })
+        .catch(function () {
+            $('#stat-total, #stat-pendientes, #stat-aprobados').text('0');
+            $('#stat-monto').text('$0.00 MXN');
+            renderRecentTable([]);
+        });
+
+    // Refresh user data
+    API.get('/auth/me')
+        .then(function (res) {
+            const user = res.data || res.user || res;
+            if (user && user.rol_id) {
+                Auth.setUser(user);
+            }
+        })
+        .catch(function () {});
+}
+
+function renderRecentTable(gastos) {
+    const $tbody = $('#recent-tbody');
+    if (!gastos || gastos.length === 0) {
+        $tbody.html(`<tr><td colspan="6">
+            <div class="empty-state py-4">
+                <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+                <p>No hay gastos recientes</p>
+            </div>
+        </td></tr>`);
+        return;
+    }
+
+    let html = '';
+    gastos.forEach(function (g) {
+        const proveedor = g.proveedor_nombre || g.proveedor || '—';
+        const area = g.area_nombre || g.area || '—';
+        const estClave = g.estatus_clave || g.estado_clave || g.estado || 'borrador';
+        const estNombre = g.estatus_nombre || g.estado_nombre || g.estado || 'Borrador';
+        html += `<tr>
+            <td><a href="gastos/detalle.html?id=${g.id}" class="folio-link">${g.folio || '#' + g.id}</a></td>
+            <td style="color:var(--text-primary); font-weight:500;">${proveedor}</td>
+            <td>${area}</td>
+            <td style="color:var(--accent); font-weight:600;">${Utils.formatMoney(g.total)}</td>
+            <td>${Utils.statusBadge(estClave, estNombre)}</td>
+            <td>${Utils.formatDate(g.fecha_carga || g.created_at)}</td>
+        </tr>`;
+    });
+    $tbody.html(html);
+}
+</script>
+</body>
+</html>
