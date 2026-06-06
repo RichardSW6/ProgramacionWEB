@@ -1575,3 +1575,38 @@ p {
     font-size: 0.8rem;
   }
 }
+
+
+/* ==========================================
+   CORRECCIÓN GLOBAL DE TABLAS MODO OSCURO
+   ========================================== */
+
+.table,
+.table tbody,
+.table tbody tr,
+.table tbody td,
+.table tbody th {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--table-stripe) !important;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: var(--table-hover) !important;
+}
+
+.table td,
+.table th {
+    border-color: var(--border-color) !important;
+}
+
+/* Bootstrap suele pintar tablas blancas */
+.table-light,
+.table-white,
+.bg-white {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
