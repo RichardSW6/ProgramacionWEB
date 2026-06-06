@@ -319,3 +319,58 @@ const Utils = {
         return `<span class="badge badge-role-${rolId} px-2 py-1">${this.roleName(rolId)}</span>`;
     },
 };
+
+/* ==========================================================================
+   Theme — Manejo de modo oscuro / claro
+   ========================================================================== */
+const Theme = {
+    STORAGE_KEY: 'gastos_theme',
+    DARK:  'dark',
+    LIGHT: 'light',
+
+    /** Retorna el tema actual guardado, o 'dark' por defecto */
+    current() {
+        return localStorage.getItem(this.STORAGE_KEY) || this.DARK;
+    },
+
+    /** Aplica el tema al documento */
+    apply(theme) {
+        if (theme === this.LIGHT) {
+            document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        localStorage.setItem(this.STORAGE_KEY, theme);
+        this._updateIcons(theme);
+    },
+
+    /** Alterna entre oscuro y claro */
+    toggle() {
+        const next = this.current() === this.DARK ? this.LIGHT : this.DARK;
+        this.apply(next);
+        return next;
+    },
+
+    /** Actualiza los iconos de todos los botones de tema en la página */
+    _updateIcons(theme) {
+        const isLight = theme === this.LIGHT;
+        // Icono en sidebar / topbar
+        $('.theme-icon-dark').toggle(!isLight);
+        $('.theme-icon-light').toggle(isLight);
+        // Icono en login
+        $('#login-theme-icon').attr('class', isLight ? 'bi bi-moon-stars-fill' : 'bi bi-sun-fill');
+        // Tooltip
+        $('[data-theme-toggle]').attr('title', isLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro');
+    },
+
+    /** Inicializa: aplica el tema guardado y enlaza todos los botones */
+    init() {
+        this.apply(this.current());
+        // Delegar clic en cualquier elemento con data-theme-toggle
+        $(document).on('click', '[data-theme-toggle]', () => this.toggle());
+    },
+};
+
+// Auto-inicializar en cuanto el DOM esté listo
+$(function() { Theme.init(); });
+
